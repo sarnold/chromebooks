@@ -43,6 +43,11 @@ For example, to create bootable SD card for the Samsung Chromebook Plus (arm64):
 $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 ```
 
+## Enable LPAE for arm chromebooks (eg, nyan-big)
+```
+$ USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
+```
+
 ## Appendix
 ### How to create a Debian image for Chromebooks
 You can build the Chromebook image for a specific suite and architecture like this:

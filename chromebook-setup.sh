@@ -42,6 +42,12 @@ Usage:
   placed anywhere and in any order.  The definition of ARGS varies
   with each COMMAND.
 
+Overrides:
+
+  Set USE_LPAE=true (or anything not zero-length) to enable more than
+  2 GBs of RAM on ARM chromebooks. Note the resulting kernel will not
+  boot on ARM CPUs without ``lpae`` support.
+
 Options:
 
   The following options are common to all commands.  Only --storage
@@ -282,7 +288,8 @@ create_fit_image()
              dtbs=" \
                    -b arch/arm/boot/dts/exynos5250-snow.dtb \
                    -b arch/arm/boot/dts/rk3288-veyron-minnie.dtb \
-                   -b arch/arm/boot/dts/rk3288-veyron-jerry.dtb"
+                   -b arch/arm/boot/dts/rk3288-veyron-jerry.dtb \
+                   -b arch/arm/boot/dts/tegra124-nyan-big.dtb"
          else
              kernel="Image.lz4"
              compression="lz4"
@@ -433,8 +440,14 @@ cmd_config_kernel()
 
     # Create .config
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
-        scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/chromebooks.cfg
-        make olddefconfig
+        if [ -n "$USE_LPAE" ]; then
+            echo "Enabling LPAE kernel support..."
+            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/lpae.cfg
+            make olddefconfig
+        else
+            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/chromebooks.cfg
+            make olddefconfig
+        fi
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
         scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig $CWD/fragments/arm64/chromebooks.cfg
         make olddefconfig

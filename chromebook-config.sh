@@ -22,5 +22,6 @@ declare -A chromebook_names=(
     ["C100PA"]="ASUS Chromebook Flip C100PA"
     ["NBCJ2"]="CTL J2 Chromebook for Education"
     ["XE513C24"]="Samsung Chromebook Plus"
+    ["CB5-311-T6R7"]="Acer Chromebook 13"
 )
 
