@@ -5,7 +5,7 @@
 #
 # Usage:
 #
-#  ./chromebook-setup.sh COMMAND [ARGS] OPTIONS
+#  OVERRIDE=1 ./chromebook-setup.sh COMMAND [ARGS] OPTIONS
 #
 # Based on mali_chromebook-setup_006 scripts by Guillaume Tucker
 #  - https://community.arm.com/graphics/b/blog/posts/linux-on-chromebook-with-arm-mali-gpu
@@ -44,9 +44,26 @@ Usage:
 
 Overrides:
 
+  USE_LPAE:
+
   Set USE_LPAE=true (or anything not zero-length) to enable more than
-  2 GBs of RAM on ARM chromebooks. Note the resulting kernel will not
-  boot on ARM CPUs without ``lpae`` support.
+  2 GBs of RAM on ARM chromebooks. Note the resulting kernel will only
+  boot on ARM CPUs with ``lpae`` support.
+
+  USE_KALI:
+
+  Set USE_KALI=true (or anything not zero-length) to use the kali linux
+  kernel source repository instead of linux-stable.
+
+  DO_[STRETCH|BUSTER|BIONIC]:
+
+  Set one of the above to use a recent mininal release targeted at
+  embedded devices. These are console-only but include nginx, connman,
+  and wpa_supplicant (among other things). Note that wifi modules may
+  need extra firmware, eg, veyron-minnie requires updated blobs to
+  activate the interface:
+
+    brcmfmac4354-sdio.{bin,txt}
 
 Options:
 
@@ -211,6 +228,17 @@ fi
 
 export ARCH=$CB_SETUP_ARCH
 
+# use alternate rootfs from RCN
+if [[ -n $DO_STRETCH ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$STRETCH_TARBALL"
+elif [[ -n $DO_BUSTER ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BUSTER_TARBALL"
+elif [[ -n $DO_BIONIC ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
+else
+    ALT_ROOTFS_URL=""
+fi
+
 # -----------------------------------------------------------------------------
 # Utility functions
 
@@ -225,6 +253,35 @@ ensure_command() {
         echo "Install required command $1 from package $2, e.g. sudo apt-get install $2"
         exit 1
     )
+}
+
+set_alt_archive()
+{
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
+        case $ROOTFS in
+        stretch)
+            debian_archive="${STRETCH_TARBALL}"
+            ;;
+        buster)
+            debian_archive="${BUSTER_TARBALL}"
+            ;;
+        bionic)
+            debian_archive="${BIONIC_TARBALL}"
+            ;;
+        esac
+    fi
+}
+
+process_alt_archive()
+{
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
+        if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
+            echo "Unpacking alt rootfs $debian_archive"
+            tar xf "${debian_archive}"
+        fi
+        debian_archive=$(find "${BASE_DIR}" -maxdepth 2 -name \*"${ROOTFS}"\*.tar)
+        echo "Alt rootfs: ${debian_archive}"
+    fi
 }
 
 find_partitions_by_id()
@@ -382,15 +439,20 @@ cmd_setup_rootfs()
     local debian_url="${1:-$DEBIAN_ROOTFS_URL}"
     local debian_archive=$(basename $debian_url)
 
+    set_alt_archive
+    echo "Using tarball: ${debian_archive}"
+
     # Download the Debian rootfs archive if it's not already there.
     if [ ! -f "$debian_archive" ]; then
         echo "Rootfs archive not found, downloading from $debian_url"
         wget "$debian_url"
     fi
 
+    process_alt_archive
+
     # Untar the rootfs archive.
     echo "Extracting files onto the partition"
-    sudo tar xf "$debian_archive" -C "$ROOTFS_DIR"
+    sudo tar xpf "${debian_archive}" --xattrs --acls -C "${ROOTFS_DIR}"
 
     echo "Done."
 }
@@ -442,20 +504,17 @@ cmd_config_kernel()
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
         if [ -n "$USE_LPAE" ]; then
             echo "Enabling LPAE kernel support..."
-            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/lpae.cfg
-            make olddefconfig
+            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/lpae.cfg $CWD/fragments/chromeos/wifi.config
         else
-            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/chromebooks.cfg
-            make olddefconfig
+            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
         fi
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig $CWD/fragments/arm64/chromebooks.cfg
-        make olddefconfig
+        scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig $CWD/fragments/arm64/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
     else
-        scripts/kconfig/merge_config.sh -m arch/x86/configs/x86_64_defconfig $CWD/fragments/x86_64/chromebooks.cfg
-        make olddefconfig
+        scripts/kconfig/merge_config.sh -m arch/x86/configs/x86_64_defconfig $CWD/fragments/x86_64/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
     fi
 
+    make olddefconfig
     cd - > /dev/null
 
     echo "Done."
@@ -583,9 +642,13 @@ cmd_do_everything()
 {
     cmd_format_storage
     cmd_mount_rootfs
-    cmd_setup_rootfs
+    cmd_setup_rootfs $ALT_ROOTFS_URL
     cmd_get_toolchain
-    cmd_get_kernel
+    if [[ -n $USE_KALI ]]; then
+        cmd_get_kernel ${KALI_KERNEL_URL}
+    else
+        cmd_get_kernel
+    fi
     cmd_config_kernel
     cmd_build_kernel
     cmd_deploy_kernel_modules

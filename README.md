@@ -48,6 +48,11 @@ $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 $ USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
+## Select a different Debian release or latest Ubuntu LTS release
+```
+$ DO_BIONIC=1 USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
+```
+
 ## Appendix
 ### How to create a Debian image for Chromebooks
 You can build the Chromebook image for a specific suite and architecture like this:
