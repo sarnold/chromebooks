@@ -7,10 +7,12 @@ that just want to take a test drive, or don't want to give up ChromeOS.
 
 You must be running the latest ChromeOS prior to installation.
 
-The following Chromebook have been tested with this tool.
-- ASUS Chromebook Flip C100PA (C100PA - arm)
+The following Chromebooks have been tested with this tool.
+- ASUS Chromebook Flip C100PA (C100PA - arm/lpae)
 - CTL J2 Chromebook for Education (NBCJ2 - arm)
-- Samsung Chromebook Plus (XE513C24 -arm64)
+- Acer CB5-311 Chromebook 13, 2GB (CB5-311 - arm/lpae)
+- Acer C810-T78Y Chromebook 13, 4GB (C810-T78Y - arm/lpae)
+- Samsung Chromebook Plus (XE513C24 - arm64)
 
 ## Switch to developer mode
 1. Turn off the laptop.
@@ -48,10 +50,14 @@ $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 $ USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
-## Select a different Debian release or latest Ubuntu LTS release
+## Select a minimal Debian release or latest Ubuntu LTS release
 ```
 $ DO_BIONIC=1 USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
 ```
+
+Note the above minimal debian/ubuntu roots are console only, but you are free
+to install the desktop of your choice (see the comments in the two main script
+files for more info).  You may select from stretch, buster, or bionic.
 
 ## Appendix
 ### How to create a Debian image for Chromebooks

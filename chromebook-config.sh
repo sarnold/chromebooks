@@ -48,6 +48,7 @@ CWD=$PWD
 declare -A chromebook_names=(
     ["C100PA"]="ASUS Chromebook Flip C100PA"
     ["NBCJ2"]="CTL J2 Chromebook for Education"
+    ["CB5-311"]="Acer Chromebook 13"
+    ["C810-T78Y"]="Acer Chromebook 13 4GB"
     ["XE513C24"]="Samsung Chromebook Plus"
-    ["CB5-311-T6R7"]="Acer Chromebook 13"
 )
