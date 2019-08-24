@@ -453,6 +453,8 @@ cmd_setup_rootfs()
     # Untar the rootfs archive.
     echo "Extracting files onto the partition"
     sudo tar xpf "${debian_archive}" --xattrs --acls -C "${ROOTFS_DIR}"
+    sudo chown root:root "${ROOTFS_DIR}/"
+    sudo chmod 755 "${ROOTFS_DIR}/"
 
     echo "Done."
 }
