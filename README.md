@@ -117,7 +117,7 @@ debian buster:  https://packages.debian.org/buster/rfkill
 
 Click on the architecture you installed, ie, either arm, arm64, or x86_64.
 
-Browse the debian mirros and pick one (eg, http.us.debian.org) and download
+Browse the debian mirrors and pick one (eg, http.us.debian.org) and download
 the rfkill deb package:
 ```sh
 $ wget http://http.us.debian.org/debian/pool/main/u/util-linux/rfkill_2.33.1-0.1_armhf.deb
@@ -140,7 +140,7 @@ was removed.  NOW you can configure the access point and psk.
 
 Second:
 
-To connect to an open AP, run the following commands, otherwise run the
+To connect to an open AP, see the Arch wiki section, otherwise run the
 interactive connmanctl shell to configure access.  See the Arch Linux wiki
 for more details.
 
