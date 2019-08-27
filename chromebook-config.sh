@@ -48,6 +48,12 @@ STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
 
+if [[ -n $USE_KALI ]]; then
+    KRNL_SRC_DIR="linux-kali"
+else
+    KRNL_SRC_DIR="linux-stable"
+fi
+
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 

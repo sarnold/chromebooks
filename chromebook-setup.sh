@@ -511,12 +511,8 @@ cmd_get_kernel()
     echo "Creating initial git repository if not already present..."
 
     local arg_url="${1-$KERNEL_URL}"
+    local dir_name="$KRNL_SRC_DIR"
 
-    if [[ -n $USE_KALI ]]; then
-        dir_name="linux-kali"
-    else
-        dir_name="linux-stable"
-    fi
     # 1. Create initial git repository if not already present
     # 2. Checkout the latest release tagged
     [ -d $dir_name ] || {
@@ -540,7 +536,7 @@ cmd_config_kernel()
 {
     echo "Configure the kernel..."
 
-    local src_dir="${1-$dir_name}"
+    local src_dir="${1-$KRNL_SRC_DIR}"
 
     cd $src_dir
 
@@ -568,7 +564,7 @@ cmd_build_kernel()
 {
     echo "Build kernel, modules and the device tree blob..."
 
-    local src_dir="${1-$dir_name}"
+    local src_dir="${1-$KRNL_SRC_DIR}"
 
     cd $src_dir
 
@@ -590,7 +586,7 @@ cmd_deploy_kernel_modules()
 {
     echo "Deploy the kernel modules on the rootfs..."
 
-    local src_dir="${1-$dir_name}"
+    local src_dir="${1-$KRNL_SRC_DIR}"
 
     cd $src_dir
 
@@ -621,7 +617,7 @@ cmd_build_vboot()
     local bootloader
     local vmlinuz
 
-    local src_dir="${1-$dir_name}"
+    local src_dir="${1-$KRNL_SRC_DIR}"
 
     echo "Sign the kernels to boot with Chrome OS devices..."
 
@@ -658,7 +654,7 @@ cmd_deploy_vboot()
 {
     echo "Deploy vboot image on the boot partition..."
 
-    local src_dir="${1-$dir_name}"
+    local src_dir="${1-$KRNL_SRC_DIR}"
 
     if $storage_is_media_device; then
         find_partitions_by_id
@@ -712,11 +708,11 @@ cmd_do_everything()
     else
         cmd_get_kernel
     fi
-    cmd_config_kernel $dir_name
-    cmd_build_kernel $dir_name
-    cmd_deploy_kernel_modules $dir_name
-    cmd_build_vboot $dir_name
-    cmd_deploy_vboot $dir_name
+    cmd_config_kernel $KRNL_SRC_DIR
+    cmd_build_kernel $KRNL_SRC_DIR
+    cmd_deploy_kernel_modules $KRNL_SRC_DIR
+    cmd_build_vboot $KRNL_SRC_DIR
+    cmd_deploy_vboot $KRNL_SRC_DIR
     cmd_eject_storage
 }
 
@@ -726,10 +722,10 @@ cmd_do_everything()
 cmd_deploy_kernel()
 {
     cmd_mount_rootfs
-    cmd_build_kernel $dir_name
-    cmd_deploy_kernel_modules $dir_name
-    cmd_build_vboot $dir_name
-    cmd_deploy_vboot $dir_name
+    cmd_build_kernel $KRNL_SRC_DIR
+    cmd_deploy_kernel_modules $KRNL_SRC_DIR
+    cmd_build_vboot $KRNL_SRC_DIR
+    cmd_deploy_vboot $KRNL_SRC_DIR
     cmd_eject_storage
 }
 
