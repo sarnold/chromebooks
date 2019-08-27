@@ -36,13 +36,18 @@ Environment variables:
 
 Usage:
 
-  $0 COMMAND [ARGS] OPTIONS
+  OVERRIDE=1 $0 COMMAND [ARGS] OPTIONS
 
   Only COMMAND and ARGS are positional arguments; the OPTIONS can be
   placed anywhere and in any order.  The definition of ARGS varies
   with each COMMAND.
 
 Overrides:
+
+  USE_LATEST_RC:
+
+  Set USE_LATEST_RC=true (or anything not zero-length) to enable the
+  latest ``-rc*`` kernel tag instead of the latest release tag.
 
   USE_LPAE:
 
@@ -64,6 +69,19 @@ Overrides:
   activate the interface:
 
     brcmfmac4354-sdio.{bin,txt}
+
+  DO_GENTOO:
+
+  Use a Gentoo stage tarball as rootfs.  Defaults to hardened stage if
+  available; requires setting one of glibc or musl if enabled.  Note
+  the caveats about firmware apply double for Gentoo stages (since
+  ``/lib/firmware`` is completely empty).  You will need to manually
+  populate the firmware tree before you can activate things like USB
+  and networking on some chromebooks (eg, nyan-big).
+
+  USE_LIBC:
+
+  Must be set to either ``musl`` or ``glibc`` if DO_GENTOO is enabled.
 
 Options:
 
@@ -214,14 +232,17 @@ fi
 
 if [ "$CB_SETUP_ARCH" == "x86_64" ]; then
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-amd64.tar.gz"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_AMD64_BASE}${AMD64_STAGE}"
 elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-$CB_SETUP_ARCH.tar.gz"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM64_BASE}${ARM64_STAGE}"
     TOOLCHAIN="$ARM64_TOOLCHAIN"
     TOOLCHAIN_URL="$ARM64_TOOLCHAIN_URL"
     [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
 $PWD/$TOOLCHAIN/bin/aarch64-linux-gnu-
 else
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-armhf.tar.gz"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM_BASE}${ARM_STAGE}"
     [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
 $PWD/$TOOLCHAIN/bin/arm-linux-gnueabihf-
 fi
@@ -235,6 +256,8 @@ elif [[ -n $DO_BUSTER ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BUSTER_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
+elif [[ -n $DO_GENTOO ]]; then
+    ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
 else
     ALT_ROOTFS_URL=""
 fi
@@ -456,6 +479,12 @@ cmd_setup_rootfs()
     sudo chown root:root "${ROOTFS_DIR}/"
     sudo chmod 755 "${ROOTFS_DIR}/"
 
+    # allow empty root passwd on gentoo rootfs
+    if [[ -n $DO_GENTOO ]]; then
+        echo "Allowing empty root password on Gentoo stage..."
+        sudo sed -i -e "s|root:\*|root:|" "${ROOTFS_DIR}/etc/shadow"
+    fi
+
     echo "Done."
 }
 
@@ -483,12 +512,23 @@ cmd_get_kernel()
 
     local arg_url="${1-$KERNEL_URL}"
 
+    if [[ -n $USE_KALI ]]; then
+        dir_name="linux-kali"
+    else
+        dir_name="linux-stable"
+    fi
     # 1. Create initial git repository if not already present
     # 2. Checkout the latest release tagged
-    [ -d kernel ] || {
-        git clone "$arg_url" kernel
-        cd kernel
-        local tag=$(git describe --abbrev=0 --exclude="*rc*")
+    [ -d $dir_name ] || {
+        git clone "$arg_url" $dir_name
+        cd "$dir_name"
+        local tag
+        if [[ -n $USE_LATEST_RC ]]; then
+            tag=$(git describe --abbrev=0)
+        else
+            rtag=$(git describe --abbrev=0 --exclude="*rc*")
+            tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
+        fi
 	git checkout ${tag} -b release-${tag}
 	cd - > /dev/null
     }
@@ -500,7 +540,9 @@ cmd_config_kernel()
 {
     echo "Configure the kernel..."
 
-    cd kernel
+    local src_dir="${1-$dir_name}"
+
+    cd $src_dir
 
     # Create .config
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
@@ -526,7 +568,9 @@ cmd_build_kernel()
 {
     echo "Build kernel, modules and the device tree blob..."
 
-    cd kernel
+    local src_dir="${1-$dir_name}"
+
+    cd $src_dir
 
     # Build kernel + modules + device tree blob
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
@@ -546,7 +590,9 @@ cmd_deploy_kernel_modules()
 {
     echo "Deploy the kernel modules on the rootfs..."
 
-    cd kernel
+    local src_dir="${1-$dir_name}"
+
+    cd $src_dir
 
     # Install the kernel modules on the rootfs
     sudo make modules_install INSTALL_MOD_PATH=$ROOTFS_DIR
@@ -575,18 +621,20 @@ cmd_build_vboot()
     local bootloader
     local vmlinuz
 
+    local src_dir="${1-$dir_name}"
+
     echo "Sign the kernels to boot with Chrome OS devices..."
 
     case "$CB_SETUP_ARCH" in
         arm|arm64)
             arch="arm"
             bootloader="boot_params"
-            vmlinuz="kernel/kernel.itb"
+            vmlinuz="${src_dir}/kernel.itb"
             ;;
         x86_64)
             arch="x86"
             bootloader="./bootstub/bootstub.efi"
-            vmlinuz="kernel/arch/x86/boot/bzImage"
+            vmlinuz="${src_dir}/arch/x86/boot/bzImage"
             ;;
         *)
             echo "Unsupported vboot architecture"
@@ -595,7 +643,7 @@ cmd_build_vboot()
     esac
 
     echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw" > boot_params
-    sudo vbutil_kernel --pack kernel/kernel.vboot \
+    sudo vbutil_kernel --pack $src_dir/kernel.vboot \
                        --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                        --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
                        --version 1 --config boot_params \
@@ -610,15 +658,17 @@ cmd_deploy_vboot()
 {
     echo "Deploy vboot image on the boot partition..."
 
+    local src_dir="${1-$dir_name}"
+
     if $storage_is_media_device; then
         find_partitions_by_id
 
         # Install it on the boot partition
         local boot="$CB_SETUP_STORAGE1"
-        sudo dd if=kernel/kernel.vboot of="$boot" bs=4M
+        sudo dd if="$src_dir/kernel.vboot" of="$boot" bs=4M
     else
         if [ "$CB_SETUP_ARCH" != "x86_64" ]; then
-            sudo cp -av kernel/kernel.itb "$ROOTFS_DIR/boot"
+            sudo cp -av "$src_dir/kernel.itb" "$ROOTFS_DIR/boot"
 	else
             echo "WARNING: Not implemented for x86_64."
 	fi
@@ -637,7 +687,18 @@ cmd_eject_storage()
     udisksctl unmount -b "$CB_SETUP_STORAGE2"
     udisksctl power-off -b "$CB_SETUP_STORAGE" > /dev/null 2>&1 || true
 
+    if [[ -n $DO_GENTOO ]]; then
+        echo "You will need to set a root passwd!!"
+    fi
+
     echo "All done."
+}
+
+cmd_do_rootfs()
+{
+    cmd_format_storage
+    cmd_mount_rootfs
+    cmd_setup_rootfs $ALT_ROOTFS_URL
 }
 
 cmd_do_everything()
@@ -651,11 +712,11 @@ cmd_do_everything()
     else
         cmd_get_kernel
     fi
-    cmd_config_kernel
-    cmd_build_kernel
-    cmd_deploy_kernel_modules
-    cmd_build_vboot
-    cmd_deploy_vboot
+    cmd_config_kernel $dir_name
+    cmd_build_kernel $dir_name
+    cmd_deploy_kernel_modules $dir_name
+    cmd_build_vboot $dir_name
+    cmd_deploy_vboot $dir_name
     cmd_eject_storage
 }
 
@@ -665,10 +726,10 @@ cmd_do_everything()
 cmd_deploy_kernel()
 {
     cmd_mount_rootfs
-    cmd_build_kernel
-    cmd_deploy_kernel_modules
-    cmd_build_vboot
-    cmd_deploy_vboot
+    cmd_build_kernel $dir_name
+    cmd_deploy_kernel_modules $dir_name
+    cmd_build_vboot $dir_name
+    cmd_deploy_vboot $dir_name
     cmd_eject_storage
 }
 

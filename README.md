@@ -1,9 +1,10 @@
 # Chromebook developer tool
-These instructions will create a dual-booting environment where you can
-switch between booting Debian and the stock ChromeOS. No changes are made
-to the internal eMMC drive, and your new Debian install will run
-completely from external storage. This is the recommended setup for those
-that just want to take a test drive, or don't want to give up ChromeOS.
+These instructions will create a bootable environment on sdcard or USB
+stick where you can switch between booting Linux and the stock ChromeOS.
+No changes are made to the internal eMMC drive, and your new Linux install
+will run completely from external storage. This is the recommended setup
+for those that just want to take a test drive, or don't want to give up
+ChromeOS.
 
 You must be running the latest ChromeOS prior to installation.
 
@@ -46,21 +47,43 @@ $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 ```
 
 ## Enable LPAE for arm chromebooks (eg, nyan-big)
-```
+```sh
 $ USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
 ## Select a minimal Debian release or latest Ubuntu LTS release
-```
+```sh
 $ DO_BIONIC=1 USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
 ```
 
-Note the above minimal debian/ubuntu roots are console only, but you are free
-to install the desktop of your choice (see the comments in the two main script
-files for more info).  You may select from stretch, buster, or bionic.
+Note: The above minimal debian/ubuntu roots are console only, but you are
+      free to install the desktop of your choice (see the comments in the
+      two main script files for more info).  You may select from stretch,
+      buster, or bionic.
+
+## Select an even more minimal Gentoo stage (either musl or glibc)
+```sh
+$ DO_GENTOO=1 USE_ELIBC=musl USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
+```
 
 ## Appendix
-### How to enable wireless/bluetooth in a console image
+### How to bootstrap a Gentoo stage install
+If you choose a Gentoo stage, it will pull the latest (as of this writing)
+hardened glibc or musl stage3/4 (depending on what is available).  The
+stage3 tarballs *do* have ``rfkill`` but *do not* have any firmware or
+wpa_supplicant. The quick-and-dirty firmware answer is just copy ``/lib/firmware``
+from your host to the target rootfs (the second partition).  This will make
+USB devices work on tegra, however, you will need to build ``wpa_supplicant``
+by hand if you need wifi to continue with the install (which is a total PITA).
+Much easier to spend a few bucks on a USB ethernet adapter...
+
+See the default stage settings in the ``chromebook-config.sh`` script.
+You may need to pre-build firmware/wifi support in a chroot first and
+create your own stage4 tarball; just update the config script with the
+name of your stage4 file and drop it in this directory before running
+the setup script.
+
+### How to enable wireless/bluetooth in a debian/ubuntu console image
 If you choose one of the minimal rootfs options, the default state of both
 wifi and bluetooth is "soft blocked".  The default networking tool is also
 connman (as opposed to NetworkManager or the basic net scripts) so setting
@@ -176,6 +199,8 @@ Passphrase? passphrase
 Connected wifi_abc_managed_psk
 connmanctl> quit
 ```
+(note you can use tab-complete on the long service name)
+
 If the connection fails, try rebooting and/or moving closer to the AP. Once
 you have a connection, use the ``iwconfig`` command to check signal level and
 link quality.

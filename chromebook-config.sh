@@ -11,6 +11,31 @@ ARM64_TOOLCHAIN_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2
 DEBIAN_SUITE="sid"
 ROOTFS_BASE_URL="https://people.collabora.com/~eballetbo/debian/images/"
 
+# here we default to the stage4 musl hardened if available, and fall
+# back to stage3. Only recent builds are chosen, either musl or the
+# standard glibc (mainly only the armv7 glibc stage is old).
+GENTOO_MIRROR="https://gentoo.osuosl.org/"
+if [[ -n $DO_GENTOO ]]; then
+    if [[ $USE_LIBC == "glibc" ]]; then
+        GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
+        AMD64_STAGE="stage4-amd64-hardened+minimal-20190821T214502Z.tar.xz"
+        GENTOO_ARM64_BASE="experimental/arm64/"
+        ARM64_STAGE="stage4-arm64-minimal-20190613.tar.bz2"
+        GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
+        ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
+    elif [[ $USE_LIBC == "musl" ]]; then
+        GENTOO_AMD64_BASE="experimental/amd64/musl/"
+        AMD64_STAGE="stage4-amd64-musl-hardened-20180721.tar.bz2"
+        GENTOO_ARM64_BASE="experimental/arm64/musl/"
+        ARM64_STAGE="stage3-arm64-musl-hardened-20190624.tar.bz2"
+        GENTOO_ARM_BASE="experimental/arm/musl/"
+        ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
+    else
+        echo "No libc was defined!! Set USE_LIBC to one of: musl or glibc!!"
+        exit 1
+    fi
+fi
+
 # alternate minimal rootfs for debian and ubuntu on arm
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
@@ -23,7 +48,7 @@ STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
 
-KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
 if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
