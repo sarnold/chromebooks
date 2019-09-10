@@ -25,7 +25,7 @@ The following Chromebooks have been tested with this tool.
    will reboot and reset the system. This takes about 10-15 minutes.
 
 Note: After enabling developer mode, you will need to press Ctrl-D each
-      time you boot, or wait 30 seconds to continue booting.
+      time you boot, or wait 30 seconds to continue booting ChromeOS.
 
 ## Enable booting from external storage
 1. After booting into developer mode, hold Ctrl and Alt and poke the F2
@@ -35,7 +35,8 @@ Note: After enabling developer mode, you will need to press Ctrl-D each
 ```sh
 $ enable_dev_usb_boot
 ```
-4. Reboot the system to allow the change to take effect.
+4. Reboot the system to allow the change to take effect. Now you can use
+   Ctrl-U to boot from external media, or Ctrl-D to boot from emmc.
 
 ## Create a USB or SD for dual booting
 ```sh
@@ -65,6 +66,14 @@ Note: The above minimal debian/ubuntu roots are console only, but you are
 ```sh
 $ DO_GENTOO=1 USE_ELIBC=musl USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
+
+## Note about logins
+The minimal Debian/Ubuntu rootfs user logins are displayed on the console
+prompt: ``[debian|ubuntu]:temppwd``.  The Gentoo stage3/4 tarballs have no
+user yet, so the root passwd has been blanked.  The default Debian rootfs
+never booted properly for me, so I don't know what the login details are
+(you'll need to mount your boot device and inspect/edit the shadow file
+yourself).
 
 ## Appendix
 ### How to bootstrap a Gentoo stage install
@@ -151,12 +160,12 @@ $ sudo dpkg -i rfkill_2.33.1-0.1_armhf.deb
 ```
 To see the state, run:
 ```sh
-# sudo rfkill list
+$ sudo rfkill list
 ```
 If you see ``Soft blocked: yes`` for the Wireless LAN device, then run:
 ```sh
-# sudo rfkill unblock wifi
-# sudo rfkill unblock all
+$ sudo rfkill unblock wifi
+$ sudo rfkill unblock all
 ```
 Then reboot and run ``sudo rfkill list`` again to make sure the soft block
 was removed.  NOW you can configure the access point and psk.
@@ -213,7 +222,7 @@ like this:
 $ debos -t arch:"arm64" debos/images/lxde-desktop/debimage.yaml
 ```
 The images can be built for different architectures (supported architectures
-are armhf, arm64 and amd64)
+are armhf, arm64 and amd64).
 
 ## References:
 

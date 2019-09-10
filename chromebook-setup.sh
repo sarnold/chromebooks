@@ -49,11 +49,17 @@ Overrides:
   Set USE_LATEST_RC=true (or anything not zero-length) to enable the
   latest ``-rc*`` kernel tag instead of the latest release tag.
 
-  USE_LPAE:
+  NO_LPAE:
 
-  Set USE_LPAE=true (or anything not zero-length) to enable more than
-  2 GBs of RAM on ARM chromebooks. Note the resulting kernel will only
-  boot on ARM CPUs with ``lpae`` support.
+  Set NO_LPAE=true (or anything not zero-length) to disable support
+  for LPAE on ARM chromebooks.  Note the resulting kernel will
+  boot on ARM CPUs with ``lpae`` support but will be limited to
+  no more than 2 GBs of ram.
+
+  ENABLE_HYP:
+  Set ENABLE_HYP=true (or anything not zero-length) to enable HYP mode
+  for KVM acceleration (requires lpae and virtualization cpu flags).
+  DO NOT set NO_LPAE if you need this.
 
   USE_KALI:
 
@@ -367,6 +373,9 @@ create_fit_image()
              compression="none"
              dtbs=" \
                    -b arch/arm/boot/dts/exynos5250-snow.dtb \
+                   -b arch/arm/boot/dts/exynos5250-snow-rev5.dtb \
+                   -b arch/arm/boot/dts/exynos5420-peach-pit.dtb \
+                   -b arch/arm/boot/dts/exynos5800-peach-pi.dtb \
                    -b arch/arm/boot/dts/rk3288-veyron-minnie.dtb \
                    -b arch/arm/boot/dts/rk3288-veyron-jerry.dtb \
                    -b arch/arm/boot/dts/tegra124-nyan-big.dtb"
@@ -539,19 +548,34 @@ cmd_config_kernel()
     local src_dir="${1-$KRNL_SRC_DIR}"
 
     cd $src_dir
+    base_defconfig="arch/arm/configs/multi_v7_defconfig"
 
     # Create .config
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
-        if [ -n "$USE_LPAE" ]; then
-            echo "Enabling LPAE kernel support..."
-            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/lpae.cfg $CWD/fragments/chromeos/wifi.config
-        else
-            scripts/kconfig/merge_config.sh -m arch/arm/configs/multi_v7_defconfig $CWD/fragments/multi-v7/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
-        fi
+            if [ -z "${NO_LPAE}" ]; then
+                if [ -n "$ENABLE_HYP" ]; then
+                    echo "Enabling HYP mode kernel support..."
+                    CPU_FRAGMENT="$CWD/fragments/multi-v7/lpae.cfg $CWD/fragments/multi-v7/kvm-hyp.cfg"
+                else
+                    echo "Enabling LPAE kernel support..."
+                    CPU_FRAGMENT="$CWD/fragments/multi-v7/lpae.cfg"
+                fi
+            else
+                echo "Cannot enable KVM host without LPAE"
+            fi
+            scripts/kconfig/merge_config.sh -m "${base_defconfig}" "${CPU_FRAGMENT}"  \
+                $CWD/fragments/multi-v7/security.cfg \
+                $CWD/fragments/chromeos/wifi.config \
+                $CWD/fragments/multi-v7/drm.cfg
+
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig $CWD/fragments/arm64/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
+        scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig \
+            $CWD/fragments/arm64/chromebooks.cfg \
+            $CWD/fragments/chromeos/wifi.config
     else
-        scripts/kconfig/merge_config.sh -m arch/x86/configs/x86_64_defconfig $CWD/fragments/x86_64/chromebooks.cfg $CWD/fragments/chromeos/wifi.config
+        scripts/kconfig/merge_config.sh -m arch/x86/configs/x86_64_defconfig \
+            $CWD/fragments/x86_64/chromebooks.cfg \
+            $CWD/fragments/chromeos/wifi.config
     fi
 
     make olddefconfig
@@ -562,14 +586,17 @@ cmd_config_kernel()
 
 cmd_build_kernel()
 {
-    echo "Build kernel, modules and the device tree blob..."
+    echo "Build kernel, modules and the device tree blobs..."
 
     local src_dir="${1-$KRNL_SRC_DIR}"
 
     cd $src_dir
 
-    # Build kernel + modules + device tree blob
+    # Build kernel + modules + device tree blobs
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
+        # NOTE uImage is mainly only useful for snow/pi/pit
+        # also, uImage needs to build zImage anyway...
+        #LOADADDR="0x40008000" make uImage modules dtbs $(jopt)
         make zImage modules dtbs $(jopt)
     else
 	    make $(jopt)
@@ -577,6 +604,14 @@ cmd_build_kernel()
 
     create_fit_image
 
+    if [ "$CB_SETUP_ARCH" == "arm" ]; then
+        # we need a single dtb fit image for snow
+        cp -v $CWD/tools/testing/kernel-snow.its \
+            arch/arm/boot/kernel.its
+        mkimage -f arch/arm/boot/kernel.its vmlinux.fit
+        # and a small stub
+        dd if=/dev/zero of=bootloader.bin bs=512 count=1
+    fi
     cd - > /dev/null
 
     echo "Done."
@@ -638,7 +673,7 @@ cmd_build_vboot()
             ;;
     esac
 
-    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw" > boot_params
+    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd net.ifnames=0" > boot_params
     sudo vbutil_kernel --pack $src_dir/kernel.vboot \
                        --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                        --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
@@ -646,6 +681,18 @@ cmd_build_vboot()
                        --bootloader $bootloader \
                        --vmlinuz $vmlinuz \
                        --arch $arch
+
+
+    if [ "$CB_SETUP_ARCH" == "arm" ]; then
+        # we also need a separate test image for snow manual install
+        echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd net.ifnames=0 video=LVDS-1:1366x768" > boot_params
+        sudo vbutil_kernel --arch arm --pack $src_dir/vmlinux.kpart \
+            --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
+            --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
+            --version 1 --config boot_params \
+            --bootloader $src_dir/bootloader.bin \
+            --vmlinuz $src_dir/vmlinux.fit
+    fi
 
     echo "Done."
 }

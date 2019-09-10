@@ -1,5 +1,10 @@
 # chromebook-config.sh - Configuration file for chromebook-setup
 
+# stuff required for snow/peach for now
+#  from google: nv_uboot-snow-simplefb.kpart
+#
+# set NVUBOOT=1 to enable  (not wired yet))
+
 # default rootfs and toolchain (arm)
 TOOLCHAIN="gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf"
 TOOLCHAIN_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2018.08/$TOOLCHAIN.tar.xz"
@@ -14,22 +19,37 @@ ROOTFS_BASE_URL="https://people.collabora.com/~eballetbo/debian/images/"
 # here we default to the stage4 musl hardened if available, and fall
 # back to stage3. Only recent builds are chosen, either musl or the
 # standard glibc (mainly only the armv7 glibc stage is old).
-GENTOO_MIRROR="https://gentoo.osuosl.org/"
+if [[ -n $USE_BLEEDING ]]; then
+    GENTOO_MIRROR="https://files.emjay-embedded.co.uk/"
+else
+    GENTOO_MIRROR="https://gentoo.osuosl.org/"
+fi
 if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
         GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
         AMD64_STAGE="stage4-amd64-hardened+minimal-20190821T214502Z.tar.xz"
         GENTOO_ARM64_BASE="experimental/arm64/"
         ARM64_STAGE="stage4-arm64-minimal-20190613.tar.bz2"
-        GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
-        ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
+        if [[ -n $USE_BLEEDING ]]; then
+            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
+            ARM_STAGE="stage3-armv7a_hardfp-20190804-142748UTC.tar.bz2"
+        else
+            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
+            #ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
+        fi
+        ARM_STAGE="stage4-armv7a_hardfp-20190827.tar.bz2"
     elif [[ $USE_LIBC == "musl" ]]; then
         GENTOO_AMD64_BASE="experimental/amd64/musl/"
         AMD64_STAGE="stage4-amd64-musl-hardened-20180721.tar.bz2"
         GENTOO_ARM64_BASE="experimental/arm64/musl/"
         ARM64_STAGE="stage3-arm64-musl-hardened-20190624.tar.bz2"
-        GENTOO_ARM_BASE="experimental/arm/musl/"
-        ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
+        if [[ -n $USE_BLEEDING ]]; then
+            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
+            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190805-190344UTC.tar.bz2"
+        else
+            GENTOO_ARM_BASE="experimental/arm/musl/"
+            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
+        fi
     else
         echo "No libc was defined!! Set USE_LIBC to one of: musl or glibc!!"
         exit 1
