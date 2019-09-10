@@ -42,7 +42,7 @@ if [[ -n $DO_GENTOO ]]; then
         GENTOO_AMD64_BASE="experimental/amd64/musl/"
         AMD64_STAGE="stage4-amd64-musl-hardened-20180721.tar.bz2"
         GENTOO_ARM64_BASE="experimental/arm64/musl/"
-        ARM64_STAGE="stage3-arm64-musl-hardened-20190624.tar.bz2"
+        ARM64_STAGE="stage3-arm64-musl-hardened-20190908.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
             ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190805-190344UTC.tar.bz2"

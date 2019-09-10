@@ -565,6 +565,7 @@ cmd_config_kernel()
             fi
             scripts/kconfig/merge_config.sh -m "${base_defconfig}" "${CPU_FRAGMENT}"  \
                 $CWD/fragments/multi-v7/security.cfg \
+                $CWD/fragments/multi-v7/power.cfg \
                 $CWD/fragments/chromeos/wifi.config \
                 $CWD/fragments/multi-v7/drm.cfg
 
@@ -687,11 +688,11 @@ cmd_build_vboot()
         # we also need a separate test image for snow manual install
         echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd net.ifnames=0 video=LVDS-1:1366x768" > boot_params
         sudo vbutil_kernel --arch arm --pack $src_dir/vmlinux.kpart \
-            --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
-            --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
-            --version 1 --config boot_params \
-            --bootloader $src_dir/bootloader.bin \
-            --vmlinuz $src_dir/vmlinux.fit
+                           --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
+                           --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
+                           --version 1 --config boot_params \
+                           --bootloader $src_dir/bootloader.bin \
+                           --vmlinuz $src_dir/vmlinux.fit
     fi
 
     echo "Done."
