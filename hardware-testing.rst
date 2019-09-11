@@ -40,4 +40,8 @@ Results
      - snow (rev 4)
      - single
      - works: mostly everything but panel edid (force 1366x768)
-
+   * 5.3.0-rc6
+     - kevin
+     - default
+     - works: mostly everything but xorg/drm/modesetting (needs
+       more kernel testing)
