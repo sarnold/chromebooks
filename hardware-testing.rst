@@ -54,11 +54,11 @@ What Doesn't Work
 Results
 =======
 
-Github *should* render a table here.
+Latest test results should be added to the top.
 
 
 .. list-table::
-   :widths: 9 11 9 33
+   :widths: 12 14 10 33
    :header-rows: 1
 
    * - Kernel
