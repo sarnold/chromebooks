@@ -9,13 +9,14 @@ ChromeOS.
 You must be running the latest ChromeOS prior to installation.
 
 The following Chromebooks have been tested with this tool.
-- ASUS Chromebook Flip C100PA (C100PA - arm/lpae)
-- CTL J2 Chromebook for Education (NBCJ2 - arm)
-- Acer CB5-311 Chromebook 13, 2GB (CB5-311 - arm/lpae)
-- Acer C810-T78Y Chromebook 13, 4GB (C810-T78Y - arm/lpae)
-- Samsung Chromebook Plus (XE513C24 - arm64)
+- Samsung Chromebook XE303C12 (snow - arm/lpae)
+- ASUS Chromebook Flip C100PA (veyron-minnie - arm/lpae)
+- CTL J2 Chromebook for Education (veyron-jerry - arm/lpae)
+- Acer CB5-311 Chromebook 13, 2GB (nyan-big - arm/lpae)
+- Acer C810-T78Y Chromebook 13, 4GB (nyan-big - arm/lpae)
+- Samsung Chromebook Plus (kevin - arm64)
 
-## Switch to developer mode
+## Switch to developer mode - NOTE this will reset your device!!
 1. Turn off the laptop.
 2. To invoke Recovery mode, you hold down the ESC and Refresh keys and
    poke the Power button.
@@ -28,9 +29,10 @@ Note: After enabling developer mode, you will need to press Ctrl-D each
       time you boot, or wait 30 seconds to continue booting ChromeOS.
 
 ## Enable booting from external storage
-1. After booting into developer mode, hold Ctrl and Alt and poke the F2
-   key. This will open up the developer console.
-2. Type root to the login screen.
+1. After booting into developer mode, at the login screen hold Ctrl and Alt
+   and poke the F2 (right arrow) key. This will open up the developer console.
+2. Type ``chronos`` at the login screen and sudo to root (hint: read the prompt
+   and set a user password after sudo-ing).
 3. Then type this to enable USB booting:
 ```sh
 $ enable_dev_usb_boot
@@ -47,24 +49,26 @@ For example, to create bootable SD card for the Samsung Chromebook Plus (arm64):
 $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 ```
 
-## Enable LPAE for arm chromebooks (eg, nyan-big)
+## Enable virtualization for arm chromebooks (eg, nyan-big) if
+   allowed by the firmware:
 ```sh
-$ USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
+$ ENABLE_HYP=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
 ## Select a minimal Debian release or latest Ubuntu LTS release
 ```sh
-$ DO_BIONIC=1 USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
+$ DO_BIONIC=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
 ```
 
 Note: The above minimal debian/ubuntu roots are console only, but you are
       free to install the desktop of your choice (see the comments in the
       two main script files for more info).  You may select from stretch,
-      buster, or bionic.
+      buster, or bionic. After connecting, do ``sudo apt-get update/upgrade``
+      and then try ``sudo apt-get install xbuntu-desktop`` on bionic.
 
 ## Select an even more minimal Gentoo stage (either musl or glibc)
 ```sh
-$ DO_GENTOO=1 USE_ELIBC=musl USE_LPAE=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
+$ DO_GENTOO=1 USE_ELIBC=musl ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
 ## Note about logins

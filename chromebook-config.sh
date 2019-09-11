@@ -97,6 +97,7 @@ CWD=$PWD
 # Chromebook-specific config.
 
 declare -A chromebook_names=(
+    ["XE303C12"]="Samsung Chromebook"
     ["C100PA"]="ASUS Chromebook Flip C100PA"
     ["NBCJ2"]="CTL J2 Chromebook for Education"
     ["CB5-311"]="Acer Chromebook 13"
