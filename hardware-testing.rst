@@ -58,7 +58,7 @@ Latest test results should be added to the top.
 
 
 .. list-table::
-   :widths: 12 14 10 33
+   :widths: 14 16 10 33
    :header-rows: 1
 
    * - Kernel
