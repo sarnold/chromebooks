@@ -151,7 +151,10 @@ First:
 Go to the debian/ubuntu package page for rfkill; in this example we use
 debian buster:  https://packages.debian.org/buster/rfkill
 
-Click on the architecture you installed, ie, either arm, arm64, or x86_64.
+For ubuntu, start here
+ubuntu bionic:  https://launchpad.net/ubuntu/bionic/armhf/rfkill/2.31.1-0.4ubuntu3
+
+Click on the architecture you installed, ie, either armhf, arm64, or x86_64.
 
 Browse the debian mirrors and pick one (eg, http.us.debian.org) and download
 the rfkill deb package:
