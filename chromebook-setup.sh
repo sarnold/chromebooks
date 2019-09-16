@@ -423,22 +423,23 @@ cmd_format_storage()
     sudo umount "$CB_SETUP_STORAGE"* > /dev/null 2>&1 || true
 
     # Clear the partition table
-    sudo sgdisk -Z "$CB_SETUP_STORAGE"
+    sudo dd if=/dev/zero of=${CB_SETUP_STORAGE} bs=512 count=1
+    sudo parted --script "$CB_SETUP_STORAGE" mklabel gpt
 
-    # Create the boot partition and set it as bootable
-    sudo sgdisk -n 1:0:+32M -t 1:7f00 "$CB_SETUP_STORAGE"
+    # Create the GPT/MBR data
+    sudo cgpt create "$CB_SETUP_STORAGE"
+    sudo cgpt boot -p "$CB_SETUP_STORAGE"
 
-    # Set special metadata understood by the Chromebook.  These flags
-    # are not standard thus do not have names.  For more details, see
-    # the cgpt sources which can be found in vboot_reference chromiumos
-    # repository.
-    sudo sgdisk -A 1:set:48 -A 1:set:56 "$CB_SETUP_STORAGE"
+    # add kernel image (boot) partition with priority, etc
+    sudo cgpt add -i 1 -t kernel -b 8192 -s 32768 -l kernel -S 1 -T 5 -P 10 "$CB_SETUP_STORAGE"
 
-    # Create and format the root partition
-    sudo sgdisk -n 2:0:0 -t 2:7f01 "$CB_SETUP_STORAGE"
+    # need size first, then add rootfs partition
+    TOTAL_SIZE=$(sudo cgpt show "${CB_SETUP_STORAGE}" | grep 'Sec GPT table' | awk '{ print $1 }')
+    sudo cgpt add -i 2 -t data -b 40960 -s `expr  "${TOTAL_SIZE}" - 40960` -l rootfs "$CB_SETUP_STORAGE"
 
     # Tell the system to refresh what it knows about the disk partitions
     sudo partprobe "$CB_SETUP_STORAGE"
+    sleep 2
 
     wait_for_partitions_to_appear
     find_partitions_by_id
