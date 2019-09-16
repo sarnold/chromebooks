@@ -36,7 +36,7 @@ if [[ -n $DO_GENTOO ]]; then
         else
             GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
             #ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
-            ARM_STAGE="stage4-minimal-armv7a_hardfp-20190911.tar.bz2"
+            ARM_STAGE="stage4-armv7a_hardfp-20190912.tar.bz2"
         fi
     elif [[ $USE_LIBC == "musl" ]]; then
         GENTOO_AMD64_BASE="experimental/amd64/musl/"
@@ -60,9 +60,9 @@ fi
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
-STRETCH_BASE="debian-9.9-minimal-armhf-2019-08-11"
-BUSTER_BASE="debian-10.0-minimal-armhf-2019-08-11"
-BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-08-11"
+STRETCH_BASE="debian-9.10-minimal-armhf-2019-09-07"
+BUSTER_BASE="debian-10.1-minimal-armhf-2019-09-07"
+BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-09-07"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
