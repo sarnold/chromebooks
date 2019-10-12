@@ -485,7 +485,8 @@ cmd_setup_rootfs()
 
     # Untar the rootfs archive.
     echo "Extracting files onto the partition"
-    sudo tar xpf "${debian_archive}" --xattrs --acls -C "${ROOTFS_DIR}"
+    sudo tar xpf "${debian_archive}" --xattrs-include='*.*' --acls \
+        --numeric-owner -C "${ROOTFS_DIR}"
     sudo chown root:root "${ROOTFS_DIR}/"
     sudo chmod 755 "${ROOTFS_DIR}/"
 
@@ -568,7 +569,8 @@ cmd_config_kernel()
                 $CWD/fragments/multi-v7/security.cfg \
                 $CWD/fragments/multi-v7/power.cfg \
                 $CWD/fragments/chromeos/wifi.config \
-                $CWD/fragments/multi-v7/drm.cfg
+                $CWD/fragments/multi-v7/drm.cfg \
+                $CWD/fragments/multi-v7/networking.cfg
 
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
         scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig \

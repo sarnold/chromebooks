@@ -1,10 +1,16 @@
-# Chromebook developer tool
+# Linux on Chromebook user/developer tool
 These instructions will create a bootable environment on sdcard or USB
 stick where you can switch between booting Linux and the stock ChromeOS.
 No changes are made to the internal eMMC drive, and your new Linux install
 will run completely from external storage. This is the recommended setup
 for those that just want to take a test drive, or don't want to give up
 ChromeOS.
+
+By default this version will install either the upstream Debian sid
+or Gentoo rootfs tarballs on all supported architectures, with the
+additional option of minimal Debian stretch/buster or Ubuntu bionic
+console installs on arm only (from which you can easily install your
+favorite desktop, eg, ``lubuntu-desktop``).
 
 You must be running the latest ChromeOS prior to installation.
 
@@ -16,7 +22,7 @@ The following Chromebooks have been tested with this tool.
 - Acer C810-T78Y Chromebook 13, 4GB (nyan-big - arm/lpae)
 - Samsung Chromebook Plus (kevin - arm64)
 
-## Switch to developer mode - NOTE this will reset your device!!
+## Switch to developer mode - NOTE this will reset your chromebook device!!
 1. Turn off the laptop.
 2. To invoke Recovery mode, you hold down the ESC and Refresh keys and
    poke the Power button.
@@ -44,7 +50,8 @@ $ enable_dev_usb_boot
 ```sh
 $ ./chromebook-setup.sh help
 ```
-For example, to create bootable SD card for the Samsung Chromebook Plus (arm64):
+For example, to create a bootable SD card for the Samsung Chromebook
+Plus (arm64) with Debian sid:
 ```sh
 $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 ```
@@ -55,7 +62,7 @@ $ ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
 $ ENABLE_HYP=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
-## Select a minimal Debian release or latest Ubuntu LTS release
+## Select a minimal Ubuntu LTS release using an mmc card device:
 ```sh
 $ DO_BIONIC=1 ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/mmcblkX
 ```
@@ -64,11 +71,11 @@ Note: The above minimal debian/ubuntu roots are console only, but you are
       free to install the desktop of your choice (see the comments in the
       two main script files for more info).  You may select from stretch,
       buster, or bionic. After connecting, do ``sudo apt-get update/upgrade``
-      and then try ``sudo apt-get install xbuntu-desktop`` on bionic.
+      and then try ``sudo apt-get install xubuntu-desktop`` on bionic.
 
 ## Select an even more minimal Gentoo stage (either musl or glibc)
 ```sh
-$ DO_GENTOO=1 USE_ELIBC=musl ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
+$ DO_GENTOO=1 USE_LIBC=musl ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
 ## Note about logins
