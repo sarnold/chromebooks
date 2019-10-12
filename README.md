@@ -86,6 +86,30 @@ never booted properly for me, so I don't know what the login details are
 (you'll need to mount your boot device and inspect/edit the shadow file
 yourself).
 
+## Note about signed kernel images
+Both armv7 and arm64 devices require the proper device tree blobs in the
+signed kernel.fit image that goes into the chromeos kernel partition. This
+is normally the .dtb file for the target device, however the default arm
+kernel image contains the .dtb blobs for all supported chromebook devices.
+This works fine on everything except the original samsung chromebook (snow)
+so we also build a separate signed kernel image for the snow chromebook
+with only the single blob.  If you have a snow chromebook you'll need to
+manually ``dd`` the image to the first partition on the sdcard or usb
+stick.
+
+The kernel image artifacts are in the top level of the kernel source
+tree:
+- kernel.vboot - default (signed) kernel image
+- vmlinux.kpart - signed kernel image for snow
+
+For chromebook snow, wait for the script to complete and then manually
+re-insert the boot device and verify the device name again (eg, ``/dev/sdb``),
+then run the following command:
+```sh
+$ sudo dd if=linux-stable/vmlinux.kpart of=/dev/sdX bs=4M
+```
+Replace ``sdX`` with your device and adjust the directory name as needed.
+
 ## Appendix
 ### How to bootstrap a Gentoo stage install
 If you choose a Gentoo stage, it will pull the latest (as of this writing)
