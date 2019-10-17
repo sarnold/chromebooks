@@ -106,7 +106,7 @@ For chromebook snow, wait for the script to complete and then manually
 re-insert the boot device and verify the device name again (eg, ``/dev/sdb``),
 then run the following command:
 ```sh
-$ sudo dd if=linux-stable/vmlinux.kpart of=/dev/sdX bs=4M
+$ sudo dd if=linux-stable/vmlinux.kpart of=/dev/sdX1 bs=4M
 ```
 Replace ``sdX`` with your device and adjust the directory name as needed.
 

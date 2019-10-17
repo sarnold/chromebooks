@@ -677,7 +677,7 @@ cmd_build_vboot()
             ;;
     esac
 
-    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd net.ifnames=0" > boot_params
+    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd" > boot_params
     vbutil_kernel --pack $src_dir/kernel.vboot \
                        --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                        --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
@@ -689,7 +689,7 @@ cmd_build_vboot()
 
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
         # we also need a separate test image for snow manual install
-        echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd net.ifnames=0 video=LVDS-1:1366x768" > boot_params
+        echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd video=LVDS-1:1366x768" > boot_params
         vbutil_kernel --arch arm --pack $src_dir/vmlinux.kpart \
                            --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                            --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
