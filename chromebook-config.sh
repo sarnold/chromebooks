@@ -32,7 +32,7 @@ if [[ -n $DO_GENTOO ]]; then
         ARM64_STAGE="stage4-arm64-minimal-20190613.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
-            ARM_STAGE="stage3-armv7a_hardfp-20190804-142748UTC.tar.bz2"
+            ARM_STAGE="stage3-armv7a_hardfp-20191010-113500UTC.tar.bz2"
         else
             GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
             ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
@@ -45,7 +45,7 @@ if [[ -n $DO_GENTOO ]]; then
         ARM64_STAGE="stage3-arm64-musl-hardened-20190908.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
-            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190805-190344UTC.tar.bz2"
+            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20191011-132742UTC.tar.bz2"
         else
             GENTOO_ARM_BASE="experimental/arm/musl/"
             ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
@@ -60,9 +60,9 @@ fi
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
-STRETCH_BASE="debian-9.10-minimal-armhf-2019-09-07"
-BUSTER_BASE="debian-10.1-minimal-armhf-2019-09-07"
-BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-09-07"
+STRETCH_BASE="debian-9.11-minimal-armhf-2019-09-16"
+BUSTER_BASE="debian-10.1-minimal-armhf-2019-09-16"
+BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-09-16"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"

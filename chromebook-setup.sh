@@ -378,6 +378,7 @@ create_fit_image()
                    -b arch/arm/boot/dts/exynos5800-peach-pi.dtb \
                    -b arch/arm/boot/dts/rk3288-veyron-minnie.dtb \
                    -b arch/arm/boot/dts/rk3288-veyron-jerry.dtb \
+                   -b arch/arm/boot/dts/rk3288-veyron-speedy.dtb \
                    -b arch/arm/boot/dts/tegra124-nyan-big.dtb"
          else
              kernel="Image.lz4"
@@ -447,6 +448,9 @@ cmd_format_storage()
     sudo mkfs.ext4 -L ROOT-A "$CB_SETUP_STORAGE2"
 
     echo "Done."
+
+    # the full do_everything command sometimes silently fails here :(
+    sleep 2
 }
 
 cmd_mount_rootfs()
@@ -458,8 +462,9 @@ cmd_mount_rootfs()
 
     echo "Mounting rootfs partition..."
 
-    udisksctl mount -b "$CB_SETUP_STORAGE2" > /dev/null 2>&1 || true
-    ROOTFS_DIR=`findmnt -n -o TARGET --source $CB_SETUP_STORAGE2`
+    #udisksctl mount -b "$CB_SETUP_STORAGE2" > /dev/null 2>&1 || true
+    udisksctl mount -b "$CB_SETUP_STORAGE2"
+    ROOTFS_DIR=$(findmnt -n -o TARGET --source $CB_SETUP_STORAGE2)
 
     # Verify that the disk is mounted, otherwise exit
     if [ -z "$ROOTFS_DIR" ]; then exit 1; fi
