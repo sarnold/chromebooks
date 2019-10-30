@@ -249,6 +249,7 @@ $PWD/$TOOLCHAIN/bin/aarch64-linux-gnu-
 else
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-armhf.tar.gz"
     GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM_BASE}${ARM_STAGE}"
+    UBUNTU_TOUCH_URL="${TOUCH_URL}${TOUCH_BASE}${TOUCH_TARBALL}"
     [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
 $PWD/$TOOLCHAIN/bin/arm-linux-gnueabihf-
 fi
@@ -262,8 +263,12 @@ elif [[ -n $DO_BUSTER ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BUSTER_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
+elif [[ -n $DO_XENIAL ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$XENIAL_TARBALL"
 elif [[ -n $DO_GENTOO ]]; then
     ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
+elif [[ -n $DO_TOUCH ]]; then
+    ALT_ROOTFS_URL="${UBUNTU_TOUCH_URL}"
 else
     ALT_ROOTFS_URL=""
 fi
@@ -286,7 +291,7 @@ ensure_command() {
 
 set_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
         case $ROOTFS in
         stretch)
             debian_archive="${STRETCH_TARBALL}"
@@ -297,13 +302,16 @@ set_alt_archive()
         bionic)
             debian_archive="${BIONIC_TARBALL}"
             ;;
+        xenial)
+            debian_archive="${XENIAL_TARBALL}"
+            ;;
         esac
     fi
 }
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             echo "Unpacking alt rootfs $debian_archive"
             tar xf "${debian_archive}"
@@ -571,6 +579,7 @@ cmd_config_kernel()
                 echo "Cannot enable KVM host without LPAE"
             fi
             scripts/kconfig/merge_config.sh -m "${base_defconfig}" "${CPU_FRAGMENT}"  \
+                $CWD/fragments/multi-v7/touch.cfg \
                 $CWD/fragments/multi-v7/security.cfg \
                 $CWD/fragments/multi-v7/power.cfg \
                 $CWD/fragments/chromeos/wifi.config \

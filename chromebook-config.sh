@@ -63,10 +63,16 @@ ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
 STRETCH_BASE="debian-9.11-minimal-armhf-2019-09-16"
 BUSTER_BASE="debian-10.1-minimal-armhf-2019-09-16"
 BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-09-16"
+XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
+XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
+
+TOUCH_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
+TOUCH_BASE="lastSuccessfulBuild/artifact/out/"
+TOUCH_TARBALL="ubuntu-touch-xenial-edge-armhf-rootfs.tar.gz"
 
 if [[ -n $USE_KALI ]]; then
     KRNL_SRC_DIR="linux-kali"
@@ -77,7 +83,7 @@ fi
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
-if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
+if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
     if [[ -n $DO_STRETCH ]]; then
         ROOTFS="debian-stretch"
         BASE_DIR="${STRETCH_BASE}"
@@ -87,6 +93,9 @@ if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC ]]; then
     elif [[ -n $DO_BIONIC ]]; then
         ROOTFS="ubuntu-bionic"
         BASE_DIR="${BIONIC_BASE}"
+    elif [[ -n $DO_XENIAL ]]; then
+        ROOTFS="ubuntu-xenial"
+        BASE_DIR="${XENIAL_BASE}"
     fi
     ROOTFS_BASE_URL="${ALT_BASE_URL}"
 fi

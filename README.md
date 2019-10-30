@@ -95,7 +95,7 @@ This works fine on everything except the original samsung chromebook (snow)
 so we also build a separate signed kernel image for the snow chromebook
 with only the single blob.  If you have a snow chromebook you'll need to
 manually ``dd`` the image to the first partition on the sdcard or usb
-stick.
+stick (see below).
 
 The kernel image artifacts are in the top level of the kernel source
 tree:
@@ -126,6 +126,67 @@ You may need to pre-build firmware/wifi support in a chroot first and
 create your own stage4 tarball; just update the config script with the
 name of your stage4 file and drop it in this directory before running
 the setup script.
+
+### How to bootstrap Ubuntu Touch install
+
+Build your chromebook boot device with DO_TOUCH=1 then re-insert and mount
+your boot media; this may or may not boot correctly, so the "safe" approach
+is to make two boot devices (one sdcard and one USB stick) using the Touch
+tarball for one, and one of the other targets (Ubuntu or Debian) for the
+second device.  Use the second device to boot your chromebook and then
+chroot into your Ubuntu Touch rootfs.
+
+Since the Touch rootfs is not quite ready to boot fully, follow these
+post-install steps to complete the config in your chroot:
+
+Clone the ubports rootfs-builder repo from gitlab and move the repo
+to root's $HOME dir on the Touch rootfs:
+```sh
+$ git clone https://gitlab.com/ubports/core/rootfs-builder-debos.git
+```
+Enter the chroot, then:
+
+1. Fix the TERM environment var:
+```sh
+# export TERM=xterm-256color
+```
+2. Restore the ``_apt`` user:
+```sh
+# adduser _apt --force-badname --system --no-create-home --disabled-password --disabled-login
+```
+3. Set default user password:
+```sh
+# echo phablet:phablet | chpasswd
+```
+4. Change to the rootfs-builder source tree:
+```
+# cd ~/rootfs-builder-debos
+```
+Copy the contents under mods-overlay/ to the right places in the rootfs:
+```sh
+$ tree -A rootfs-builder-debos/mods-overlay/
+rootfs-builder-debos/mods-overlay/
+├── etc
+│   └── init
+│       ├── repowerd.override
+│       ├── ssh-keygen.conf
+│       └── ttyS0.conf
+└── usr
+    └── bin
+        └── ssh-keygen.sh
+```
+5. Run the (generic armhf) setup scripts from the rootfs-builder tree:
+```sh
+# scripts/add-mainline-repos.sh
+# scripts/enable-mesa.sh
+```
+6. Refresh the kernel module dependencies; use the directory name from
+   your install under ``/lib/modules``:
+```
+# depmod -a 5.3.0-00001-gc094c373f029
+```
+6. Exit the chroot, power off and remove your (chroot) boot device, then
+   power it back up and wait for the Ubuntu Touch setup wizard.  Enjoy!
 
 ### How to enable wireless/bluetooth in a debian/ubuntu console image
 If you choose one of the minimal rootfs options, the default state of both
@@ -263,6 +324,18 @@ The images can be built for different architectures (supported architectures
 are armhf, arm64 and amd64).
 
 ## References:
+
+Gentoo Embedded:
+
+https://wiki.gentoo.org/wiki/Embedded_Handbook
+https://wiki.gentoo.org/wiki/Embedded_systems
+
+Ubuntu Touch:
+
+https://github.com/ubports/unity8
+https://gitlab.com/ubports/core/rootfs-builder-debos/tree/master
+
+Wifi Setup:
 
 https://wiki.archlinux.org/index.php/ConnMan
 https://www.erdahl.io/2016/04/configuring-wifi-on-beagleboardorg.html
