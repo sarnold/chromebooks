@@ -185,7 +185,11 @@ rootfs-builder-debos/mods-overlay/
 ```
 # depmod -a 5.3.0-00001-gc094c373f029
 ```
-6. Exit the chroot, power off and remove your (chroot) boot device, then
+6. Install the linux-firmware package:
+```sh
+# dpkg -i files/linux-firmware_1.182_all.deb
+```
+7. Exit the chroot, power off and remove your (chroot) boot device, then
    power it back up and wait for the Ubuntu Touch setup wizard.  Enjoy!
 
 ### How to enable wireless/bluetooth in a debian/ubuntu console image
