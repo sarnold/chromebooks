@@ -41,7 +41,7 @@ Note: After enabling developer mode, you will need to press Ctrl-D each
    and set a user password after sudo-ing).
 3. Then type this to enable USB booting:
 ```sh
-$ enable_dev_usb_boot
+# enable_dev_usb_boot
 ```
 4. Reboot the system to allow the change to take effect. Now you can use
    Ctrl-U to boot from external media, or Ctrl-D to boot from emmc.
@@ -317,6 +317,19 @@ If the connection fails, try rebooting and/or moving closer to the AP. Once
 you have a connection, use the ``iwconfig`` command to check signal level and
 link quality.
 
+### Note about wifi on Ubuntu Touch
+For a bootstrap install of Ubuntu Touch on veyron-minnie, the process to
+enable wifi is slightly different than shown above.  After the rfkill
+step to release the wifi soft block, use the ``nmcli`` tool instead of
+``connmanctl``.  Open a terminal and do:
+```sh
+$ sudo nmcli radio wifi on
+```
+Check the new state with:
+```sh
+$ sudo nmcli radio
+```
+Then open the Settings app and look for your local wifi AP.
 
 ### How to create a Debian image for Chromebooks
 You can build the Chromebook image for a specific suite and architecture
