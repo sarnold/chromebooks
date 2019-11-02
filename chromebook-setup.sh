@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # This file:
 #
-#  - Chromebook developer tool to create a Debian bootable media device.
+#  - Chromebook tool to create a bootable media device with various
+#    flavors of rootfs.
 #
 # Usage:
 #
@@ -23,7 +24,7 @@ print_usage_exit()
     local arg_ret="${1-1}"
 
     echo "
-Chromebook developer tool.
+Chromebook Linux media builder.
 
 Environment variables:
 
@@ -75,6 +76,13 @@ Overrides:
   activate the interface:
 
     brcmfmac4354-sdio.{bin,txt}
+
+  DO_TOUCH:
+
+  Use the mainline Ubuntu Touch rootfs; note this works without an actual
+  touchscreen, but is mainly targeted at touchscreen-only devices (ie,
+  phones and tablets).  Well suited to touch chromebooks, albeit with a
+  few rough edges (and possibly some splinters).
 
   DO_GENTOO:
 
