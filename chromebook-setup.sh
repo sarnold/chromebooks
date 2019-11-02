@@ -67,7 +67,7 @@ Overrides:
   Set USE_KALI=true (or anything not zero-length) to use the kali linux
   kernel source repository instead of linux-stable.
 
-  DO_[STRETCH|BUSTER|BIONIC]:
+  DO_[STRETCH|BUSTER|XENIAL|BIONIC]:
 
   Set one of the above to use a recent mininal release targeted at
   embedded devices. These are console-only but include nginx, connman,
@@ -82,7 +82,8 @@ Overrides:
   Use the mainline Ubuntu Touch rootfs; note this works without an actual
   touchscreen, but is mainly targeted at touchscreen-only devices (ie,
   phones and tablets).  Well suited to touch chromebooks, albeit with a
-  few rough edges (and possibly some splinters).
+  few rough edges (and possibly some splinters). Also note this is not
+  console-only rootfs (duh...)
 
   DO_GENTOO:
 
@@ -181,7 +182,10 @@ Commands useful for development workflow:
 
   deploy_kernel
     Compile the Linux kernel, its modules, the vboot image and deploy all
-    on the storage device.
+    on the storage device (uses existing rootfs).
+
+  do_rootfs
+    Create and mount device root partition and deploy rootfs, then stop.
 
 For example, to do everything on a SD card for the ASUS Chromebook Flip
 C100PA (arm):
@@ -244,18 +248,18 @@ fi
     print_usage_exit
 }
 
+DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-$DEBIAN_ARCH.tar.gz"
+
 if [ "$CB_SETUP_ARCH" == "x86_64" ]; then
-    DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-amd64.tar.gz"
     GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_AMD64_BASE}${AMD64_STAGE}"
 elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
-    DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-$CB_SETUP_ARCH.tar.gz"
     GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM64_BASE}${ARM64_STAGE}"
+    UBUNTU_TOUCH_URL="${TOUCH_URL}${TOUCH_BASE}${TOUCH_TARBALL}"
     TOOLCHAIN="$ARM64_TOOLCHAIN"
     TOOLCHAIN_URL="$ARM64_TOOLCHAIN_URL"
     [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
 $PWD/$TOOLCHAIN/bin/aarch64-linux-gnu-
 else
-    DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-armhf.tar.gz"
     GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM_BASE}${ARM_STAGE}"
     UBUNTU_TOUCH_URL="${TOUCH_URL}${TOUCH_BASE}${TOUCH_TARBALL}"
     [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
