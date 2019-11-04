@@ -79,9 +79,11 @@ BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
 XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
 
-TOUCH_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-${DEBIAN_ARCH}/"
+TOUCH_ARM_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
+TOUCH_ARM64_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-arm64/"
 TOUCH_BASE="lastSuccessfulBuild/artifact/out/"
-TOUCH_TARBALL="ubuntu-touch-xenial-edge-${DEBIAN_ARCH}-rootfs.tar.gz"
+TOUCH_ARM_TARBALL="ubuntu-touch-xenial-edge-armhf-rootfs.tar.gz"
+TOUCH_ARM64_TARBALL="ubuntu-touch-xenial-edge-arm64-rootfs.tar.gz"
 
 if [[ -n $USE_KALI ]]; then
     KRNL_SRC_DIR="linux-kali"

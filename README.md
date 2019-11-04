@@ -136,10 +136,10 @@ tarball for one, and one of the other targets (Ubuntu or Debian) for the
 second device.  Use the second device to boot your chromebook and then
 chroot into your Ubuntu Touch rootfs.
 
-Since the Touch rootfs is not quite ready to boot fully, follow these
-post-install steps to complete the config in your chroot:
-
-Clone the ubports rootfs-builder repo from gitlab and move the repo
+Since the Touch rootfs is not quite ready to boot fully, follow the
+post-install steps to complete the config in your chroot; note you may
+need to copy /etc/resolv.conf to your chroot first.  You will also need
+to clone the ubports rootfs-builder repo from gitlab and move the repo
 to root's $HOME dir on the Touch rootfs:
 ```sh
 $ git clone https://gitlab.com/ubports/core/rootfs-builder-debos.git
