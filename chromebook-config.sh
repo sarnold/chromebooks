@@ -16,15 +16,6 @@ ARM64_TOOLCHAIN_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2
 DEBIAN_SUITE="sid"
 ROOTFS_BASE_URL="https://people.collabora.com/~eballetbo/debian/images/"
 
-if [ "$CB_SETUP_ARCH" == "x86_64" ]; then
-    DEBIAN_ARCH="amd64"
-elif [ "$CB_SETUP_ARCH" == "arm" ]; then
-    DEBIAN_ARCH="armhf"
-    GENTOO_ARCH="armv7a"
-else
-    DEBIAN_ARCH="arm64"
-fi
-
 # here we default to the stage4 musl hardened if available, and fall
 # back to stage3. Only recent builds are chosen, either musl or the
 # standard glibc (mainly only the armv7 glibc stage is old).
@@ -33,6 +24,7 @@ if [[ -n $USE_BLEEDING ]]; then
 else
     GENTOO_MIRROR="https://gentoo.osuosl.org/"
 fi
+
 if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
         GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
@@ -40,11 +32,11 @@ if [[ -n $DO_GENTOO ]]; then
         GENTOO_ARM64_BASE="experimental/arm64/"
         ARM64_STAGE="stage4-arm64-minimal-20190613.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
-            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/${GENTOO_ARCH}/glibc/"
-            ARM_STAGE="stage3-${GENTOO_ARCH}-20191010-113500UTC.tar.bz2"
+            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
+            ARM_STAGE="stage3-armv7a-20191010-113500UTC.tar.bz2"
         else
-            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-${GENTOO_ARCH}_hardfp/"
-            ARM_STAGE="stage3-${GENTOO_ARCH}_hardfp-20180831.tar.bz2"
+            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
+            ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
             #ARM_STAGE="stage4-armv7a_hardfp-20191015.tar.bz2"
         fi
     elif [[ $USE_LIBC == "musl" ]]; then
@@ -53,11 +45,11 @@ if [[ -n $DO_GENTOO ]]; then
         GENTOO_ARM64_BASE="experimental/arm64/musl/"
         ARM64_STAGE="stage3-arm64-musl-hardened-20190908.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
-            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/${GENTOO_ARCH}/musl/"
-            ARM_STAGE="stage3-${GENTOO_ARCH}_hardfp-musl-hardened-20191011-132742UTC.tar.bz2"
+            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
+            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20191011-132742UTC.tar.bz2"
         else
             GENTOO_ARM_BASE="experimental/arm/musl/"
-            ARM_STAGE="stage3-${GENTOO_ARCH}_hardfp-musl-hardened-20190429.tar.bz2"
+            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
         fi
     else
         echo "No libc was defined!! Set USE_LIBC to one of: musl or glibc!!"
@@ -83,6 +75,7 @@ TOUCH_ARM_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
 TOUCH_ARM64_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-arm64/"
 TOUCH_BASE="lastSuccessfulBuild/artifact/out/"
 TOUCH_ARM_TARBALL="ubuntu-touch-xenial-edge-armhf-rootfs.tar.gz"
+#TOUCH_ARM_TARBALL="ubuntu-touch-xenial-edge-armhf-rootfs-cfgd.tar.bz2"
 TOUCH_ARM64_TARBALL="ubuntu-touch-xenial-edge-arm64-rootfs.tar.gz"
 
 if [[ -n $USE_KALI ]]; then
