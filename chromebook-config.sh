@@ -61,9 +61,9 @@ fi
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
-STRETCH_BASE="debian-9.11-minimal-armhf-2019-09-16"
-BUSTER_BASE="debian-10.1-minimal-armhf-2019-09-16"
-BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-09-16"
+STRETCH_BASE="debian-9.11-minimal-armhf-2019-11-23"
+BUSTER_BASE="debian-10.2-minimal-armhf-2019-11-23"
+BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-11-23"
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
