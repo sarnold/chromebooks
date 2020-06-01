@@ -65,11 +65,13 @@ STRETCH_BASE="debian-9.11-minimal-armhf-2019-11-23"
 BUSTER_BASE="debian-10.2-minimal-armhf-2019-11-23"
 BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2019-11-23"
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
+FOCAL_BASE="ubuntu-20.04-minimal-armhf-2020-05-10"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
 XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
+FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
 
 TOUCH_ARM_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
 TOUCH_ARM64_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-arm64/"
@@ -87,7 +89,7 @@ fi
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
-if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
+if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n DO_FOCAL ]]; then
     if [[ -n $DO_STRETCH ]]; then
         ROOTFS="debian-stretch"
         BASE_DIR="${STRETCH_BASE}"

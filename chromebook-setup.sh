@@ -67,7 +67,7 @@ Overrides:
   Set USE_KALI=true (or anything not zero-length) to use the kali linux
   kernel source repository instead of linux-stable.
 
-  DO_[STRETCH|BUSTER|XENIAL|BIONIC]:
+  DO_[STRETCH|BUSTER|XENIAL|BIONIC|FOCAL]:
 
   Set one of the above to use a recent mininal release targeted at
   embedded devices. These are console-only but include nginx, connman,
@@ -280,6 +280,8 @@ elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
 elif [[ -n $DO_XENIAL ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$XENIAL_TARBALL"
+elif [[ -n $DO_FOCAL ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$FOCAL_TARBALL"
 elif [[ -n $DO_GENTOO ]]; then
     ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
 elif [[ -n $DO_TOUCH ]]; then
@@ -306,7 +308,7 @@ ensure_command() {
 
 set_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         case $ROOTFS in
         stretch)
             debian_archive="${STRETCH_TARBALL}"
@@ -320,13 +322,16 @@ set_alt_archive()
         xenial)
             debian_archive="${XENIAL_TARBALL}"
             ;;
+        focal)
+            debian_archive="${FOCAL_TARBALL}"
+            ;;
         esac
     fi
 }
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             echo "Unpacking alt rootfs $debian_archive"
             tar xf "${debian_archive}"
