@@ -259,14 +259,12 @@ elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
     UBUNTU_TOUCH_URL="${TOUCH_ARM64_URL}${TOUCH_BASE}${TOUCH_ARM64_TARBALL}"
     TOOLCHAIN="$ARM64_TOOLCHAIN"
     TOOLCHAIN_URL="$ARM64_TOOLCHAIN_URL"
-    [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
-$PWD/$TOOLCHAIN/bin/aarch64-linux-gnu-
+    [[ -n "$CROSS_COMPILE" ]] || export CROSS_COMPILE=$PWD/$TOOLCHAIN/bin/aarch64-linux-gnu-
 else
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-armhf.tar.gz"
     GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM_BASE}${ARM_STAGE}"
     UBUNTU_TOUCH_URL="${TOUCH_ARM_URL}${TOUCH_BASE}${TOUCH_ARM_TARBALL}"
-    [ -z "$CROSS_COMPILE" ] && export CROSS_COMPILE=\
-$PWD/$TOOLCHAIN/bin/arm-linux-gnueabihf-
+    [[ -n "$CROSS_COMPILE" ]] || export CROSS_COMPILE=$PWD/$TOOLCHAIN/bin/arm-linux-gnueabihf-
 fi
 
 export ARCH=$CB_SETUP_ARCH
@@ -547,6 +545,7 @@ cmd_get_toolchain()
     echo "Downloading and extracting toolchain: $url"
     curl -L "$TOOLCHAIN_URL" | tar xJf -
 
+    echo "Using ${CROSS_COMPLE}gcc"
     echo "Done."
 }
 
