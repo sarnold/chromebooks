@@ -414,7 +414,11 @@ create_fit_image()
              rm -f arch/${CB_SETUP_ARCH}/boot/Image.lz4 || true
              lz4 arch/${CB_SETUP_ARCH}/boot/Image arch/${CB_SETUP_ARCH}/boot/Image.lz4
 
-             dtbs="-b arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dtb"
+             dtbs=" \
+                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dtb
+                   -b arch/arm64/boot/dts/mediatek/mt8173-elm-hana.dtb
+                   -b arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dtb
+                   -b arch/arm64/boot/dts/mediatek/mt8173-elm.dtb"
          fi
 
          mkimage -D "-I dts -O dtb -p 2048" -f auto -A ${CB_SETUP_ARCH} -O linux -T kernel -C $compression -a 0 \
