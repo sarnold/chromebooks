@@ -29,14 +29,14 @@ if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
         GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
         AMD64_STAGE="stage4-amd64-hardened+minimal-20190821T214502Z.tar.xz"
-        GENTOO_ARM64_BASE="experimental/arm64/"
-        ARM64_STAGE="stage4-arm64-minimal-20190613.tar.bz2"
+        GENTOO_ARM64_BASE="releases/arm64/autobuilds/current-stage3-arm64/"
+        ARM64_STAGE="stage3-arm64-20200815T210543Z.tar.xz"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
             ARM_STAGE="stage3-armv7a-20191010-113500UTC.tar.bz2"
         else
             GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
-            ARM_STAGE="stage3-armv7a_hardfp-20180831.tar.bz2"
+            ARM_STAGE="stage3-armv7a_hardfp-20200509T210605Z.tar.xz"
             #ARM_STAGE="stage4-armv7a_hardfp-lxqt-20191116.tar.bz2"
         fi
     elif [[ $USE_LIBC == "musl" ]]; then
