@@ -36,8 +36,8 @@ if [[ -n $DO_GENTOO ]]; then
             ARM_STAGE="stage3-armv7a-20191010-113500UTC.tar.bz2"
         else
             GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
-            ARM_STAGE="stage3-armv7a_hardfp-20200509T210605Z.tar.xz"
-            #ARM_STAGE="stage4-armv7a_hardfp-lxqt-20191116.tar.bz2"
+            #ARM_STAGE="stage3-armv7a_hardfp-20200509T210605Z.tar.xz"
+            ARM_STAGE="stage4-armv7a-hardfp-20201015.tar.bz2"
         fi
     elif [[ $USE_LIBC == "musl" ]]; then
         GENTOO_AMD64_BASE="experimental/amd64/musl/"

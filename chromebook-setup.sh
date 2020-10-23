@@ -621,6 +621,7 @@ cmd_config_kernel()
                 $CWD/fragments/chromeos/wifi.config \
                 $CWD/fragments/multi-v7/drm.cfg \
                 $CWD/fragments/multi-v7/networking.cfg
+                # $CWD/fragments/multi-v7/chromebooks.cfg
 
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
         scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig \
