@@ -30,20 +30,20 @@ if [[ -n $DO_GENTOO ]]; then
         GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
         AMD64_STAGE="stage4-amd64-hardened+minimal-20190821T214502Z.tar.xz"
         GENTOO_ARM64_BASE="releases/arm64/autobuilds/current-stage3-arm64/"
-        ARM64_STAGE="stage3-arm64-20200815T210543Z.tar.xz"
+        ARM64_STAGE="stage3-arm64-20211212T235139Z.tar.xz"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
             ARM_STAGE="stage3-armv7a-20191010-113500UTC.tar.bz2"
         else
-            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp/"
-            #ARM_STAGE="stage3-armv7a_hardfp-20200509T210605Z.tar.xz"
-            ARM_STAGE="stage4-armv7a-hardfp-20201015.tar.bz2"
+            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp-openrc/"
+            ARM_STAGE="stage3-armv7a_hardfp-openrc-20211210T230646Z.tar.xz"
+            #ARM_STAGE="stage4-armv7a-hardfp-20201015.tar.bz2"
         fi
     elif [[ $USE_LIBC == "musl" ]]; then
         GENTOO_AMD64_BASE="experimental/amd64/musl/"
         AMD64_STAGE="stage4-amd64-musl-hardened-20180721.tar.bz2"
         GENTOO_ARM64_BASE="experimental/arm64/musl/"
-        ARM64_STAGE="stage3-arm64-musl-hardened-20190908.tar.bz2"
+        ARM64_STAGE="stage3-arm64-musl-hardened-20200605.tar.bz2"
         if [[ -n $USE_BLEEDING ]]; then
             GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
             ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20191011-132742UTC.tar.bz2"
@@ -61,11 +61,11 @@ fi
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
-STRETCH_BASE="debian-9.11-minimal-armhf-2019-11-23"
-BUSTER_BASE="debian-10.2-minimal-armhf-2019-11-23"
-BIONIC_BASE="ubuntu-18.04.3-minimal-armhf-2020-02-10"
+STRETCH_BASE="debian-9.12-minimal-armhf-2020-02-10"
+BUSTER_BASE="debian-10.11-minimal-armhf-2021-11-02"
+BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2021-11-02"
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
-FOCAL_BASE="ubuntu-20.04.1-minimal-armhf-2020-08-24"
+FOCAL_BASE="ubuntu-20.04.3-minimal-armhf-2021-11-02"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"

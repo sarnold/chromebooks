@@ -824,6 +824,7 @@ cmd_do_everything()
 cmd_deploy_kernel()
 {
     cmd_mount_rootfs
+    cmd_config_kernel $KRNL_SRC_DIR
     cmd_build_kernel $KRNL_SRC_DIR
     cmd_deploy_kernel_modules $KRNL_SRC_DIR
     cmd_build_vboot $KRNL_SRC_DIR
