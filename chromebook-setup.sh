@@ -17,8 +17,6 @@ set -e
 # Turn on traces, useful while debugging but commented out by default
 #set -x
 
-source chromebook-config.sh
-
 print_usage_exit()
 {
     local arg_ret="${1-1}"
@@ -67,7 +65,7 @@ Overrides:
   Set USE_KALI=true (or anything not zero-length) to use the kali linux
   kernel source repository instead of linux-stable.
 
-  DO_[STRETCH|BUSTER|XENIAL|BIONIC|FOCAL]:
+  DO_[STRETCH|BUSTER|BULLSEYE|XENIAL|BIONIC|FOCAL]:
 
   Set one of the above to use a recent mininal release targeted at
   embedded devices. These are console-only but include nginx, connman,
@@ -229,6 +227,8 @@ cmd="$1"
 [ -z "$cmd" ] && print_usage_exit
 shift
 
+source chromebook-config.sh
+
 # -----------------------------------------------------------------------------
 # Options sanitising
 
@@ -252,10 +252,10 @@ DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-$DEBIAN_ARCH
 
 if [ "$CB_SETUP_ARCH" == "x86_64" ]; then
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-amd64.tar.gz"
-    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_AMD64_BASE}${AMD64_STAGE}"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${AMD64_PATH}"
 elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-$CB_SETUP_ARCH.tar.gz"
-    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM64_BASE}${ARM64_STAGE}"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${ARM64_PATH}"
     UBUNTU_TOUCH_URL="${TOUCH_ARM64_URL}${TOUCH_BASE}${TOUCH_ARM64_TARBALL}"
     TOOLCHAIN="$ARM64_TOOLCHAIN"
     TOOLCHAIN_URL="$ARM64_TOOLCHAIN_URL"
@@ -266,7 +266,7 @@ elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
     fi
 else
     DEBIAN_ROOTFS_URL="$ROOTFS_BASE_URL/debian-$DEBIAN_SUITE-chromebook-armhf.tar.gz"
-    GENTOO_STAGE_URL="${GENTOO_MIRROR}${GENTOO_ARM_BASE}${ARM_STAGE}"
+    GENTOO_STAGE_URL="${GENTOO_MIRROR}${ARM_PATH}"
     UBUNTU_TOUCH_URL="${TOUCH_ARM_URL}${TOUCH_BASE}${TOUCH_ARM_TARBALL}"
     if [[ -n "$CROSS_COMPILE" ]]; then
         export HAVE_TOOLCHAIN="TRUE"
@@ -282,6 +282,8 @@ if [[ -n $DO_STRETCH ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$STRETCH_TARBALL"
 elif [[ -n $DO_BUSTER ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BUSTER_TARBALL"
+elif [[ -n $DO_BULLSEYE ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BULLSEYE_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
 elif [[ -n $DO_XENIAL ]]; then
@@ -314,13 +316,16 @@ ensure_command() {
 
 set_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         case $ROOTFS in
         stretch)
             debian_archive="${STRETCH_TARBALL}"
             ;;
         buster)
             debian_archive="${BUSTER_TARBALL}"
+            ;;
+        bullseye)
+            debian_archive="${BULLSEYE_TARBALL}"
             ;;
         bionic)
             debian_archive="${BIONIC_TARBALL}"
@@ -337,7 +342,7 @@ set_alt_archive()
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             echo "Unpacking alt rootfs $debian_archive"
             tar xf "${debian_archive}"
@@ -728,7 +733,7 @@ cmd_build_vboot()
             ;;
     esac
 
-    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd" > boot_params
+    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 net.ifnames=0 noinitrd" > boot_params
     vbutil_kernel --pack $src_dir/kernel.vboot \
                        --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                        --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
@@ -740,7 +745,7 @@ cmd_build_vboot()
 
     if [ "$CB_SETUP_ARCH" == "arm" ]; then
         # we also need a separate test image for snow manual install
-        echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 noinitrd video=LVDS-1:1366x768" > boot_params
+        echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 net.ifnames=0 noinitrd video=LVDS-1:1366x768" > boot_params
         vbutil_kernel --arch arm --pack $src_dir/vmlinux.kpart \
                            --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                            --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \

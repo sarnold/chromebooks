@@ -16,62 +16,58 @@ ARM64_TOOLCHAIN_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2
 DEBIAN_SUITE="sid"
 ROOTFS_BASE_URL="https://people.collabora.com/~eballetbo/debian/images/"
 
-# here we default to the stage4 musl hardened if available, and fall
-# back to stage3. Only recent builds are chosen, either musl or the
-# standard glibc (mainly only the armv7 glibc stage is old).
-if [[ -n $USE_BLEEDING ]]; then
-    GENTOO_MIRROR="https://files.emjay-embedded.co.uk/"
-else
-    GENTOO_MIRROR="https://gentoo.osuosl.org/"
-fi
+GENTOO_ARCH="${CB_SETUP_ARCH}"
+[ "$CB_SETUP_ARCH" == "x86_64" ] && GENTOO_ARCH="amd64"
+GENTOO_MIRROR="https://gentoo.osuosl.org/releases/${GENTOO_ARCH}/autobuilds/"
 
 if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
-        GENTOO_AMD64_BASE="releases/amd64/autobuilds/current-stage4-amd64-minimal/hardened/"
-        AMD64_STAGE="stage4-amd64-hardened+minimal-20190821T214502Z.tar.xz"
-        GENTOO_ARM64_BASE="releases/arm64/autobuilds/current-stage3-arm64/"
-        ARM64_STAGE="stage3-arm64-20211212T235139Z.tar.xz"
-        if [[ -n $USE_BLEEDING ]]; then
-            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/glibc/"
-            ARM_STAGE="stage3-armv7a-20191010-113500UTC.tar.bz2"
-        else
-            GENTOO_ARM_BASE="releases/arm/autobuilds/current-stage3-armv7a_hardfp-openrc/"
-            ARM_STAGE="stage3-armv7a_hardfp-openrc-20211210T230646Z.tar.xz"
-            #ARM_STAGE="stage4-armv7a-hardfp-20201015.tar.bz2"
-        fi
+        GENTOO_AMD64_BASE="latest-stage3-amd64-openrc.txt"
+        GENTOO_ARM64_BASE="latest-stage3-arm64.txt"
+        GENTOO_ARM_BASE="latest-stage3-armv7a_hardfp-openrc.txt"
     elif [[ $USE_LIBC == "musl" ]]; then
-        GENTOO_AMD64_BASE="experimental/amd64/musl/"
-        AMD64_STAGE="stage4-amd64-musl-hardened-20180721.tar.bz2"
-        GENTOO_ARM64_BASE="experimental/arm64/musl/"
-        ARM64_STAGE="stage3-arm64-musl-hardened-20200605.tar.bz2"
-        if [[ -n $USE_BLEEDING ]]; then
-            GENTOO_ARM_BASE="unofficial-gentoo/arm-stages/testing/armv7a/musl/"
-            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20191011-132742UTC.tar.bz2"
-        else
-            GENTOO_ARM_BASE="experimental/arm/musl/"
-            ARM_STAGE="stage3-armv7a_hardfp-musl-hardened-20190429.tar.bz2"
-        fi
+        GENTOO_AMD64_BASE="latest-stage3-amd64-musl-hardened.txt"
+        GENTOO_ARM64_BASE="latest-stage3-arm64-musl-hardened.txt"
+        GENTOO_ARM_BASE="latest-stage3-armv7a_hardfp_musl-hardened-openrc.txt"
     else
         echo "No libc was defined!! Set USE_LIBC to one of: musl or glibc!!"
         exit 1
     fi
+
+    AMD64_PATH=$(wget -O- ${GENTOO_MIRROR}${GENTOO_AMD64_BASE} | grep stage3 | cut -f1 -d" ")
+    ARM64_PATH=$(wget -O- ${GENTOO_MIRROR}${GENTOO_ARM64_BASE} | grep stage3 | cut -f1 -d" ")
+    ARM_PATH=$(wget -O- ${GENTOO_MIRROR}${GENTOO_ARM_BASE} | grep stage3 | cut -f1 -d" ")
+
+    AMD64_STAGE=$(echo "${AMD64_PATH}" | cut -f2 -d/)
+    ARM64_STAGE=$(echo "${ARM64_PATH}" | cut -f2 -d/)
+    ARM_STAGE=$(echo "${ARM_PATH}" | cut -f2 -d/)
+    #ARM_STAGE="stage4-armv7a-hardfp-20201015.tar.bz2"
 fi
 
 # alternate minimal rootfs for debian and ubuntu on arm
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
+
 STRETCH_BASE="debian-9.12-minimal-armhf-2020-02-10"
-BUSTER_BASE="debian-10.11-minimal-armhf-2021-11-02"
-BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2021-11-02"
+BUSTER_BASE="debian-10.11-minimal-armhf-2021-12-20"
+BULLSEYE_BASE="debian-11.2-minimal-armhf-2021-12-20"
+
+BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2021-12-20"
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
-FOCAL_BASE="ubuntu-20.04.3-minimal-armhf-2021-11-02"
+FOCAL_BASE="ubuntu-20.04.3-minimal-armhf-2021-12-20"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
+BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
+
 BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
 XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
 FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+
+ALT_DEB_URL="https://rcn-ee.com/rootfs/debian-arm64-minimal/2022-01-30/"
+BULLSEYE_BASE64="debian-11.2-minimal-arm64-2022-01-30"
+BULLSEYE_TARBALL64="${BULLSEYE_BASE64}.tar.xz"
 
 TOUCH_ARM_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
 TOUCH_ARM64_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-arm64/"
@@ -89,13 +85,16 @@ fi
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
-if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
     if [[ -n $DO_STRETCH ]]; then
         ROOTFS="debian-stretch"
         BASE_DIR="${STRETCH_BASE}"
     elif [[ -n $DO_BUSTER ]]; then
         ROOTFS="debian-buster"
         BASE_DIR="${BUSTER_BASE}"
+    elif [[ -n $DO_BULLSEYE ]]; then
+        ROOTFS="debian-bullseye"
+        BASE_DIR="${BULLSEYE_BASE}"
     elif [[ -n $DO_BIONIC ]]; then
         ROOTFS="ubuntu-bionic"
         BASE_DIR="${BIONIC_BASE}"
