@@ -342,7 +342,7 @@ set_alt_archive()
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             echo "Unpacking alt rootfs $debian_archive"
             tar xf "${debian_archive}"
