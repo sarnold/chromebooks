@@ -475,11 +475,11 @@ cmd_format_storage()
     sudo cgpt boot -p "$CB_SETUP_STORAGE"
 
     # add kernel image (boot) partition with priority, etc
-    sudo cgpt add -i 1 -t kernel -b 8192 -s 32768 -l kernel -S 1 -T 5 -P 10 "$CB_SETUP_STORAGE"
+    sudo cgpt add -i 1 -t kernel -b 8192 -s 65536 -l kernel -S 1 -T 5 -P 10 "$CB_SETUP_STORAGE"
 
     # need size first, then add rootfs partition
     TOTAL_SIZE=$(sudo cgpt show "${CB_SETUP_STORAGE}" | grep 'Sec GPT table' | awk '{ print $1 }')
-    sudo cgpt add -i 2 -t data -b 40960 -s `expr  "${TOTAL_SIZE}" - 40960` -l rootfs "$CB_SETUP_STORAGE"
+    sudo cgpt add -i 2 -t data -b 73728 -s `expr  "${TOTAL_SIZE}" - 73728` -l rootfs "$CB_SETUP_STORAGE"
 
     # Tell the system to refresh what it knows about the disk partitions
     sudo partprobe "$CB_SETUP_STORAGE"
