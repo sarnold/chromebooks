@@ -1,0 +1,10 @@
+# build/user by-products
+boot_params
+brcmfmac4354-sdio.txt
+linux-stable/
+
+# rootfs blobs
+*.xz
+debian-*/
+ubuntu-*/
+stage*

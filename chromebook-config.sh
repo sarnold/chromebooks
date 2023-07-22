@@ -49,13 +49,16 @@ fi
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
 
-STRETCH_BASE="debian-9.12-minimal-armhf-2020-02-10"
-BUSTER_BASE="debian-10.11-minimal-armhf-2021-12-20"
-BULLSEYE_BASE="debian-11.2-minimal-armhf-2021-12-20"
+DEB_ARCH="${CB_SETUP_ARCH}"
+[ "$CB_SETUP_ARCH" == "arm" ] && DEB_ARCH="armhf"
 
-BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2021-12-20"
+STRETCH_BASE="debian-9.12-minimal-armhf-2020-02-10"
+BUSTER_BASE="debian-10.13-minimal-${DEB_ARCH}-2022-12-20"
+BULLSEYE_BASE="debian-11.7-minimal-${DEB_ARCH}-2023-07-14"
+
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
-FOCAL_BASE="ubuntu-20.04.3-minimal-armhf-2021-12-20"
+BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2022-12-20"
+FOCAL_BASE="ubuntu-20.04.5-minimal-armhf-2023-07-14"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
@@ -66,8 +69,8 @@ XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
 FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
 
 ALT_DEB_URL="https://rcn-ee.com/rootfs/debian-arm64-minimal/2022-01-30/"
-BULLSEYE_BASE64="debian-11.2-minimal-arm64-2022-01-30"
-BULLSEYE_TARBALL64="${BULLSEYE_BASE64}.tar.xz"
+#BULLSEYE_BASE64="debian-11.2-minimal-arm64-2022-01-30"
+#BULLSEYE_TARBALL64="${BULLSEYE_BASE64}.tar.xz"
 
 TOUCH_ARM_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-armhf/"
 TOUCH_ARM64_URL="https://ci.ubports.com/job/xenial-mainline-edge-rootfs-arm64/"
