@@ -298,6 +298,9 @@ else
     ALT_ROOTFS_URL=""
 fi
 
+echo "Argument arch: ${CB_SETUP_ARCH} should match ARCH var: ${ARCH}"
+echo "Using OS ${GENTOO_ARCH} tarball URL: ${ALT_ROOTFS_URL}"
+echo ""
 # -----------------------------------------------------------------------------
 # Utility functions
 
