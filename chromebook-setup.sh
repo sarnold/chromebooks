@@ -303,7 +303,7 @@ fi
 
 jopt()
 {
-    echo "-j"$(grep -c processor /proc/cpuinfo)
+    echo "-j"$(nproc)
 }
 
 ensure_command() {
@@ -438,8 +438,8 @@ create_fit_image()
                    -b arch/arm64/boot/dts/mediatek/mt8173-elm-hana.dtb \
                    -b arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dtb \
                    -b arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dtb \
-                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dtb\
-                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet-inx.dtb \
+                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dtb \
+                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet-inx.dtb"
          fi
 
          mkimage -D "-I dts -O dtb -p 2048" -f auto -A ${CB_SETUP_ARCH} -O linux -T kernel -C $compression -a 0 \
@@ -599,8 +599,8 @@ cmd_get_kernel()
             rtag=$(git describe --abbrev=0 --exclude="*rc*")
             tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
         fi
- git checkout ${tag} -b release-${tag}
- cd - > /dev/null
+        git checkout ${tag} -b release-${tag}
+        cd - > /dev/null
     }
 
     echo "Done."
@@ -668,7 +668,7 @@ cmd_build_kernel()
         #LOADADDR="0x40008000" make uImage modules dtbs $(jopt)
         make zImage modules dtbs $(jopt)
     else
-     make $(jopt)
+        make $(jopt)
     fi
 
     create_fit_image
@@ -738,7 +738,7 @@ cmd_build_vboot()
             ;;
         *)
             echo "Unsupported vboot architecture"
-     exit 1
+            exit 1
             ;;
     esac
 
@@ -781,9 +781,9 @@ cmd_deploy_vboot()
     else
         if [ "$CB_SETUP_ARCH" != "x86_64" ]; then
             sudo cp -av "$src_dir/kernel.itb" "$ROOTFS_DIR/boot"
- else
+        else
             echo "WARNING: Not implemented for x86_64."
- fi
+        fi
     fi
 
     echo "Done."

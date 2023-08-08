@@ -23,7 +23,7 @@ GENTOO_MIRROR="https://gentoo.osuosl.org/releases/${GENTOO_ARCH}/autobuilds/"
 if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
         GENTOO_AMD64_BASE="latest-stage3-amd64-openrc.txt"
-        GENTOO_ARM64_BASE="latest-stage3-arm64.txt"
+        GENTOO_ARM64_BASE="latest-stage3-arm64-openrc.txt"
         GENTOO_ARM_BASE="latest-stage3-armv7a_hardfp-openrc.txt"
     elif [[ $USE_LIBC == "musl" ]]; then
         GENTOO_AMD64_BASE="latest-stage3-amd64-musl-hardened.txt"
