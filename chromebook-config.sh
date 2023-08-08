@@ -18,17 +18,19 @@ ROOTFS_BASE_URL="https://people.collabora.com/~eballetbo/debian/images/"
 
 GENTOO_ARCH="${CB_SETUP_ARCH}"
 [ "$CB_SETUP_ARCH" == "x86_64" ] && GENTOO_ARCH="amd64"
-GENTOO_MIRROR="https://gentoo.osuosl.org/"
+
+# the gentoo url sorting really needs refactoring
+GENTOO_MIRROR="https://gentoo.osuosl.org/releases/${GENTOO_ARCH}/autobuilds/"
 
 if [[ -n $DO_GENTOO ]]; then
     if [[ $USE_LIBC == "glibc" ]]; then
-        GENTOO_AMD64_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-amd64-openrc.txt"
-        GENTOO_ARM64_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-arm64-openrc.txt"
-        GENTOO_ARM_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-armv7a_hardfp-openrc.txt"
+        GENTOO_AMD64_BASE="latest-stage3-amd64-openrc.txt"
+        GENTOO_ARM64_BASE="latest-stage3-arm64-openrc.txt"
+        GENTOO_ARM_BASE="latest-stage3-armv7a_hardfp-openrc.txt"
     elif [[ $USE_LIBC == "musl" ]]; then
-        GENTOO_AMD64_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-amd64-musl-hardened.txt"
-        GENTOO_ARM64_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-arm64-musl-hardened.txt"
-        GENTOO_ARM_BASE="releases/${GENTOO_ARCH}/autobuilds/latest-stage3-armv7a_hardfp_musl-hardened-openrc.txt"
+        GENTOO_AMD64_BASE="latest-stage3-amd64-musl-hardened.txt"
+        GENTOO_ARM64_BASE="latest-stage3-arm64-musl-hardened.txt"
+        GENTOO_ARM_BASE="latest-stage3-armv7a_hardfp_musl-hardened-openrc.txt"
     else
         echo "No libc was defined!! Set USE_LIBC to one of: musl or glibc!!"
         exit 1
