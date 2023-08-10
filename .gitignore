@@ -8,3 +8,6 @@ linux-stable/
 debian-*/
 ubuntu-*/
 stage*
+
+# defconfigs
+*config
