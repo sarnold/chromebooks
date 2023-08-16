@@ -286,10 +286,19 @@ elif [[ -n $DO_BULLSEYE ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BULLSEYE_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
+    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
+        ALT_ROOTFS_URL="$BIONIC_TARBALL"
+    fi
 elif [[ -n $DO_XENIAL ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$XENIAL_TARBALL"
+    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
+        ALT_ROOTFS_URL="$XENIAL_TARBALL"
+    fi
 elif [[ -n $DO_FOCAL ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$FOCAL_TARBALL"
+    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
+        ALT_ROOTFS_URL="$FOCAL_TARBALL"
+    fi
 elif [[ -n $DO_GENTOO ]]; then
     ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
 elif [[ -n $DO_TOUCH ]]; then
@@ -347,10 +356,14 @@ process_alt_archive()
 {
     if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
-            echo "Unpacking alt rootfs $debian_archive"
-            tar xf "${debian_archive}"
+            if [[ -z $DO_CLOUD ]]; then
+                echo "Unpacking alt rootfs $debian_archive"
+                tar xf "${debian_archive}"
+            fi
         fi
-        debian_archive=$(find "${BASE_DIR}" -maxdepth 2 -name \*"${ROOTFS}"\*.tar)
+        if [[ -z $DO_CLOUD ]]; then
+            debian_archive=$(find "${BASE_DIR}" -maxdepth 2 -name \*"${ROOTFS}"\*.tar)
+        fi
         echo "Alt rootfs: ${debian_archive}"
     fi
 }
@@ -550,6 +563,13 @@ cmd_setup_rootfs()
     if [[ -n $DO_GENTOO ]]; then
         echo "Allowing empty root password on Gentoo stage..."
         sudo sed -i -e "s|root:\*|root:|" "${ROOTFS_DIR}/etc/shadow"
+    fi
+
+    # adjust or disable cloud-init
+    # use this to disable => touch /etc/cloud/cloud-init.disabled
+    if [ -d "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d" ]; then
+        sudo cp tools/cloud/99-data.cfg "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
+        sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/99-data.cfg"
     fi
 
     echo "Done."

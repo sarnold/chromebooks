@@ -62,13 +62,27 @@ XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
 BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2022-12-20"
 FOCAL_BASE="ubuntu-20.04.5-minimal-armhf-2023-07-14"
 
+XENIAL_CLOUD="https://cloud-images.ubuntu.com/xenial/current"
+BIONIC_CLOUD="https://cloud-images.ubuntu.com/bionic/current"
+FOCAL_CLOUD="https://cloud-images.ubuntu.com/focal/current"
+
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
 
-BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
-XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
-FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+if [ "$CB_SETUP_ARCH" == "arm" ]; then
+    #DO_CLOUD=""
+    XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
+    BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
+    FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
+    if [[ -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+        DO_CLOUD="1"
+        XENIAL_TARBALL="${XENIAL_CLOUD}/xenial-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+        BIONIC_TARBALL="${BIONIC_CLOUD}/bionic-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+        FOCAL_TARBALL="${FOCAL_TARBALL}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+    fi
+fi
 
 ALT_DEB_URL="https://rcn-ee.com/rootfs/debian-arm64-minimal/2022-01-30/"
 #BULLSEYE_BASE64="debian-11.2-minimal-arm64-2022-01-30"
