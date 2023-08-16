@@ -78,13 +78,23 @@ Note: The above minimal debian/ubuntu roots are console only, but you are
 $ DO_GENTOO=1 USE_LIBC=musl ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
+## Note about ethernet
+If your device has wired ethernet (including USB) *and* you're using one
+of the cloud image variants then you can enable the alternate cloud image
+config with `HAVE_ETHERNET=1` on the cmdline:
+
+```sh
+$ DO_BIONIC=1 HAVE_ETHERNET=1 ./chromebook-setup.sh do_everything --architecture=arm64 --storage=/dev/sdX
+```
+
 ## Note about logins
 The minimal Debian/Ubuntu rootfs user logins are displayed on the console
-prompt: ``[debian|ubuntu]:temppwd``.  The Gentoo stage3/4 tarballs have no
-user yet, so the root passwd has been blanked.  The default Debian rootfs
-never booted properly for me, so I don't know what the login details are
-(you'll need to mount your boot device and inspect/edit the shadow file
-yourself).
+prompt: ``[debian|ubuntu]:temppwd``. The Gentoo stage3/4 tarballs have no
+user yet, so the root passwd has been blanked. The Ubuntu Cloud images
+(currently arm64 only) also use the above `[ubuntu]:temppwd`` login.
+The default Debian rootfs never booted properly for me, so I don't know
+what the login details are (you'll need to mount your boot device and
+inspect/edit the shadow file yourself).
 
 ## Note about signed kernel images
 Both armv7 and arm64 devices require the proper device tree blobs in the

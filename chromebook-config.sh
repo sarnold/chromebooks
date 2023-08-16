@@ -70,8 +70,10 @@ STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
 
+CLOUD_INIT_CFG="99-data.cfg"
+[[ -n $HAVE_ETHERNET ]] && CLOUD_INIT_CFG="99-data-eth.cfg"
+
 if [ "$CB_SETUP_ARCH" == "arm" ]; then
-    #DO_CLOUD=""
     XENIAL_TARBALL="${XENIAL_BASE}.tar.xz"
     BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
     FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"

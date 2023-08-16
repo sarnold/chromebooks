@@ -568,8 +568,8 @@ cmd_setup_rootfs()
     # adjust or disable cloud-init
     # use this to disable => touch /etc/cloud/cloud-init.disabled
     if [ -d "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d" ]; then
-        sudo cp tools/cloud/99-data.cfg "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
-        sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/99-data.cfg"
+        sudo cp tools/cloud/"${CLOUD_INIT_CFG}" "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
+        sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/${CLOUD_INIT_CFG}"
     fi
 
     echo "Done."
