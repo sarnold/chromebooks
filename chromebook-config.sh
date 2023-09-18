@@ -70,7 +70,7 @@ STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
 
-CLOUD_INIT_CFG="99-data.cfg"
+CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
 [[ -n $HAVE_ETHERNET ]] && CLOUD_INIT_CFG="99-data-eth.cfg"
 
 if [ "$CB_SETUP_ARCH" == "arm" ]; then

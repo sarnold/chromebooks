@@ -96,6 +96,14 @@ Overrides:
 
   Must be set to either ``musl`` or ``glibc`` if DO_GENTOO is enabled.
 
+  HAVE_ETHERNET:
+
+  Set this to 1 to use a cloud-init data file with SSH key provisioning
+  and some apt package updates. Note this onnly applies to arm64 Ubuntu
+  variannts *and* requires your ssh pub key to be added to the data file.
+  Copy tools/cloud/99-data-eth.cfg to this directory and insert your SSH
+  pub key where the placehodler is, then set HAVE_ETHERNET=1 on the cmdline.
+
 Options:
 
   The following options are common to all commands.  Only --storage
@@ -566,9 +574,14 @@ cmd_setup_rootfs()
     fi
 
     # adjust or disable cloud-init
-    # use this to disable => touch /etc/cloud/cloud-init.disabled
+    # use this to disable in your rootfs => touch /etc/cloud/cloud-init.disabled
     if [ -d "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d" ]; then
-        sudo cp tools/cloud/"${CLOUD_INIT_CFG}" "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
+        if ! [ -f "${CLOUD_INIT_CFG}" ]; then
+            echo "${CLOUD_INIT_CFG} file not found!"
+            echo "Falling back to default ${CLOUD_INIT_CFG}..."
+            CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
+        fi
+        sudo cp "${CLOUD_INIT_CFG}" "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
         sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/${CLOUD_INIT_CFG}"
     fi
 
