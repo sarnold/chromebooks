@@ -16,7 +16,7 @@
 		};
 		fdt-1{
 			description = "exynos5250-snow.dtb";
-			data = /incbin/("dts/exynos5250-snow.dtb");
+			data = /incbin/("dts/samsung/exynos5250-snow.dtb");
 			type = "flat_dt";
 			arch = "arm";
 			compression = "none";

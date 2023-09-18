@@ -435,14 +435,15 @@ create_fit_image()
              kernel="zImage"
              compression="none"
              dtbs=" \
-                   -b arch/arm/boot/dts/exynos5250-snow.dtb \
-                   -b arch/arm/boot/dts/exynos5250-snow-rev5.dtb \
-                   -b arch/arm/boot/dts/exynos5420-peach-pit.dtb \
-                   -b arch/arm/boot/dts/exynos5800-peach-pi.dtb \
-                   -b arch/arm/boot/dts/rk3288-veyron-minnie.dtb \
-                   -b arch/arm/boot/dts/rk3288-veyron-jerry.dtb \
-                   -b arch/arm/boot/dts/rk3288-veyron-speedy.dtb \
-                   -b arch/arm/boot/dts/tegra124-nyan-big.dtb"
+                   -b arch/arm/boot/dts/samsung/exynos5250-snow.dtb \
+                   -b arch/arm/boot/dts/samsung/exynos5250-snow-rev5.dtb \
+                   -b arch/arm/boot/dts/samsung/exynos5420-peach-pit.dtb \
+                   -b arch/arm/boot/dts/samsung/exynos5800-peach-pi.dtb \
+                   -b arch/arm/boot/dts/rockchip/rk3288-veyron-minnie.dtb \
+                   -b arch/arm/boot/dts/rockchip/rk3288-veyron-jerry.dtb \
+                   -b arch/arm/boot/dts/rockchip/rk3288-veyron-speedy.dtb \
+                   -b arch/arm/boot/dts/nvidia/tegra124-nyan-big.dtb \
+             "
          else
              kernel="Image.lz4"
              compression="lz4"
@@ -459,7 +460,8 @@ create_fit_image()
                    -b arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dtb \
                    -b arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dtb \
                    -b arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dtb \
-                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet-inx.dtb"
+                   -b arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet-inx.dtb \
+             "
          fi
 
          mkimage -D "-I dts -O dtb -p 2048" -f auto -A ${CB_SETUP_ARCH} -O linux -T kernel -C $compression -a 0 \
@@ -549,7 +551,7 @@ cmd_setup_rootfs()
     local debian_archive=$(basename $debian_url)
 
     set_alt_archive
-    echo "Using tarball: ${debian_archive}"
+    echo "Using tarball: ${debian_url}"
 
     # Download the Debian rootfs archive if it's not already there.
     if [ ! -f "$debian_archive" ]; then
