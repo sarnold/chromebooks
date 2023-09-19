@@ -82,7 +82,7 @@ elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
         DO_CLOUD="1"
         XENIAL_TARBALL="${XENIAL_CLOUD}/xenial-server-cloudimg-${DEB_ARCH}-root.tar.xz"
         BIONIC_TARBALL="${BIONIC_CLOUD}/bionic-server-cloudimg-${DEB_ARCH}-root.tar.xz"
-        FOCAL_TARBALL="${FOCAL_TARBALL}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+        FOCAL_TARBALL="${FOCAL_CLOUD}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
     fi
 fi
 
