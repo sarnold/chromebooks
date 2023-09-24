@@ -79,10 +79,14 @@ if [ "$CB_SETUP_ARCH" == "arm" ]; then
     FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
 elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
     if [[ -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
-        DO_CLOUD="1"
-        XENIAL_TARBALL="${XENIAL_CLOUD}/xenial-server-cloudimg-${DEB_ARCH}-root.tar.xz"
-        BIONIC_TARBALL="${BIONIC_CLOUD}/bionic-server-cloudimg-${DEB_ARCH}-root.tar.xz"
-        FOCAL_TARBALL="${FOCAL_CLOUD}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+        if [[ -n $DO_CLOUD ]]; then
+            XENIAL_TARBALL="${XENIAL_CLOUD}/xenial-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+            BIONIC_TARBALL="${BIONIC_CLOUD}/bionic-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+            FOCAL_TARBALL="${FOCAL_CLOUD}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+        else
+            FOCAL_BASE="ubuntu-20.04.6-minimal-arm64-2023-09-23"
+            FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+        fi
     fi
 fi
 

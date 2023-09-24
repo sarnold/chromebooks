@@ -96,10 +96,16 @@ Overrides:
 
   Must be set to either ``musl`` or ``glibc`` if DO_GENTOO is enabled.
 
+  DO_CLOUD:
+
+  Use an Ubuntu cloud image rootfs; note these images really do expect
+  the proper cloud-init setup and tool usage.  This option should only
+  be used if you really want/need it.
+
   HAVE_ETHERNET:
 
   Set this to 1 to use a cloud-init data file with SSH key provisioning
-  and some apt package updates. Note this onnly applies to arm64 Ubuntu
+  and some apt package updates. Note this onnly applies to Ubuntu cloud
   variannts *and* requires your ssh pub key to be added to the data file.
   Copy tools/cloud/99-data-eth.cfg to this directory and insert your SSH
   pub key where the placehodler is, then set HAVE_ETHERNET=1 on the cmdline.
