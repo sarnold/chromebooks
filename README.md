@@ -327,6 +327,60 @@ If the connection fails, try rebooting and/or moving closer to the AP. Once
 you have a connection, use the ``iwconfig`` command to check signal level and
 link quality.
 
+### Note about netplan on Ubuntu
+
+This is necessary on recent Ubuntu rootfs from debootstrap, mainly Focal
+(and possibly others) with an empty `/etc/netplan` directory.  See the
+reference link below for more examples.
+
+Dynamic IP address assignment (DHCP client)
+
+To configure your server to use DHCP for dynamic address assignment,
+create a Netplan configuration in the file `/etc/netplan/99_config.yaml`.
+The following example assumes you are configuring your first Ethernet
+interface identified as `enp3s0`.
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      dhcp4: true
+```
+The configuration can then be applied using the netplan command:
+```sh
+sudo netplan apply
+```
+Static IP address assignment
+
+To configure your system to use static address assignment, create a
+netplan configuration in the file `/etc/netplan/99_config.yaml`. The
+example below assumes you are configuring your first Ethernet interface
+identified as eth0. Change the addresses, routes, and nameservers values
+to meet the requirements of your network.
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      addresses:
+        - 10.10.10.2/24
+      routes:
+        - to: default
+          via: 10.10.10.1
+      nameservers:
+          search: [mydomain, otherdomain]
+          addresses: [10.10.10.1, 1.1.1.1]
+```
+The configuration can then be applied using the netplan command.
+```sh
+sudo netplan apply
+```
+Note: netplan in Ubuntu Bionic 18.04 LTS doesn’t understand the `to: default`
+syntax to specify a default route, and should use the older `gateway4: 10.10.10.1`
+key instead of the whole `routes:` block.
+
 ### Note about wifi on Ubuntu Touch
 For a bootstrap install of Ubuntu Touch on veyron-minnie, the process to
 enable wifi is slightly different than shown above.  After the rfkill
@@ -366,3 +420,7 @@ Wifi Setup:
 
 https://wiki.archlinux.org/index.php/ConnMan
 https://www.erdahl.io/2016/04/configuring-wifi-on-beagleboardorg.html
+
+Ubuntu Network Configuration:
+
+https://ubuntu.com/server/docs/network-configuration

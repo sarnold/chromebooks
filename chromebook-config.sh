@@ -57,6 +57,7 @@ DEB_ARCH="${CB_SETUP_ARCH}"
 STRETCH_BASE="debian-9.12-minimal-armhf-2020-02-10"
 BUSTER_BASE="debian-10.13-minimal-${DEB_ARCH}-2022-12-20"
 BULLSEYE_BASE="debian-11.7-minimal-${DEB_ARCH}-2023-07-14"
+BOOKWORM_BASE="debian-12.1-minimal-${DEB_ARCH}-2023-08-22"
 
 XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
 BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2022-12-20"
@@ -69,6 +70,7 @@ FOCAL_CLOUD="https://cloud-images.ubuntu.com/focal/current"
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
+BOOKWORM_TARBALL="${BOOKWORM_BASE}.tar.xz"
 
 CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
 [[ -n $HAVE_ETHERNET ]] && CLOUD_INIT_CFG="99-data-eth.cfg"
@@ -110,7 +112,7 @@ fi
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
-if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
     if [[ -n $DO_STRETCH ]]; then
         ROOTFS="debian-stretch"
         BASE_DIR="${STRETCH_BASE}"
@@ -120,6 +122,9 @@ if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n 
     elif [[ -n $DO_BULLSEYE ]]; then
         ROOTFS="debian-bullseye"
         BASE_DIR="${BULLSEYE_BASE}"
+    elif [[ -n $DO_BOOKWORM ]]; then
+        ROOTFS="debian-bookworm"
+        BASE_DIR="${BOOKWORM_BASE}"
     elif [[ -n $DO_BIONIC ]]; then
         ROOTFS="ubuntu-bionic"
         BASE_DIR="${BIONIC_BASE}"

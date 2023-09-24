@@ -105,9 +105,9 @@ Overrides:
   HAVE_ETHERNET:
 
   Set this to 1 to use a cloud-init data file with SSH key provisioning
-  and some apt package updates. Note this onnly applies to Ubuntu cloud
-  variannts *and* requires your ssh pub key to be added to the data file.
-  Copy tools/cloud/99-data-eth.cfg to this directory and insert your SSH
+  and some apt package updates. Note this only applies to arm/arm64 Ubuntu
+  cloud variants *and* requires your ssh pub key to be added to the data
+  file. Copy tools/cloud/99-data-eth.cfg to this directory and insert your SSH
   pub key where the placehodler is, then set HAVE_ETHERNET=1 on the cmdline.
 
 Options:
@@ -298,6 +298,8 @@ elif [[ -n $DO_BUSTER ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BUSTER_TARBALL"
 elif [[ -n $DO_BULLSEYE ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BULLSEYE_TARBALL"
+elif [[ -n $DO_BOOKWORM ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BOOKWORM_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
     if [ "$CB_SETUP_ARCH" == "arm64" ]; then
@@ -342,7 +344,7 @@ ensure_command() {
 
 set_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         case $ROOTFS in
         stretch)
             debian_archive="${STRETCH_TARBALL}"
@@ -352,6 +354,9 @@ set_alt_archive()
             ;;
         bullseye)
             debian_archive="${BULLSEYE_TARBALL}"
+            ;;
+        bookworm)
+            debian_archive="${BOOKWORM_TARBALL}"
             ;;
         bionic)
             debian_archive="${BIONIC_TARBALL}"
@@ -368,7 +373,7 @@ set_alt_archive()
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             if [[ -z $DO_CLOUD ]]; then
                 echo "Unpacking alt rootfs $debian_archive"
