@@ -65,13 +65,13 @@ Overrides:
   Set USE_KALI=true (or anything not zero-length) to use the kali linux
   kernel source repository instead of linux-stable.
 
-  DO_[STRETCH|BUSTER|BULLSEYE|XENIAL|BIONIC|FOCAL]:
+  DO_[STRETCH|BUSTER|BULLSEYE|XENIAL|BIONIC|FOCAL|JAMMY]:
 
   Set one of the above to use a recent mininal release targeted at
-  embedded devices. These are console-only but include nginx, connman,
-  and wpa_supplicant (among other things). Note that wifi modules may
-  need extra firmware, eg, veyron-minnie requires updated blobs to
-  activate the interface:
+  embedded devices. These are console-only but include nginx, network
+  and wifi tools (among other things). Note jammy is arm64 only for now.
+  Also note that wifi modules may need extra firmware, eg, veyron-minnie
+  requires updated blobs to activate the interface:
 
     brcmfmac4354-sdio.{bin,txt}
 
@@ -315,6 +315,11 @@ elif [[ -n $DO_FOCAL ]]; then
     if [ "$CB_SETUP_ARCH" == "arm64" ]; then
         ALT_ROOTFS_URL="$FOCAL_TARBALL"
     fi
+elif [[ -n $DO_JAMMY ]]; then
+    ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$JAMMY_TARBALL"
+    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
+        ALT_ROOTFS_URL="$JAMMY_TARBALL"
+    fi
 elif [[ -n $DO_GENTOO ]]; then
     ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
 elif [[ -n $DO_TOUCH ]]; then
@@ -344,7 +349,7 @@ ensure_command() {
 
 set_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL || -n $DO_JAMMY ]]; then
         case $ROOTFS in
         stretch)
             debian_archive="${STRETCH_TARBALL}"
@@ -367,13 +372,16 @@ set_alt_archive()
         focal)
             debian_archive="${FOCAL_TARBALL}"
             ;;
+        jammy)
+            debian_archive="${JAMMY_TARBALL}"
+            ;;
         esac
     fi
 }
 
 process_alt_archive()
 {
-    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL || -n $DO_JAMMY ]]; then
         if [[ ! -d "${BASE_DIR}" && -f "${debian_archive}" ]]; then
             if [[ -z $DO_CLOUD ]]; then
                 echo "Unpacking alt rootfs $debian_archive"

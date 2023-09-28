@@ -50,6 +50,7 @@ fi
 # note these are console only but they do have wifi tools
 # for now, browse the ALT_BASE_URL to look for updates
 ALT_BASE_URL="https://rcn-ee.com/rootfs/eewiki/minfs/"
+ALT_UBASE_URL="https://github.com/VCTLabs/RootStock-NG/releases/download/v2023.09/"
 
 DEB_ARCH="${CB_SETUP_ARCH}"
 [ "$CB_SETUP_ARCH" == "arm" ] && DEB_ARCH="armhf"
@@ -63,9 +64,14 @@ XENIAL_BASE="ubuntu-16.04.4-minimal-armhf-2018-03-26"
 BIONIC_BASE="ubuntu-18.04.6-minimal-armhf-2022-12-20"
 FOCAL_BASE="ubuntu-20.04.5-minimal-armhf-2023-07-14"
 
+BIONIC_UBASE="ubuntu-18.04.6-minimal-arm64-2023-09-28"
+FOCAL_UBASE="ubuntu-20.04.6-minimal-arm64-2023-09-28"
+JAMMY_UBASE="ubuntu-22.04.3-minimal-arm64-2023-09-28"
+
 XENIAL_CLOUD="https://cloud-images.ubuntu.com/xenial/current"
 BIONIC_CLOUD="https://cloud-images.ubuntu.com/bionic/current"
 FOCAL_CLOUD="https://cloud-images.ubuntu.com/focal/current"
+JAMMY_CLOUD="https://cloud-images.ubuntu.com/jammy/current"
 
 STRETCH_TARBALL="${STRETCH_BASE}.tar.xz"
 BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
@@ -80,14 +86,20 @@ if [ "$CB_SETUP_ARCH" == "arm" ]; then
     BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
     FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
 elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
-    if [[ -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+    if [[ -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL || -n $DO_JAMMY ]]; then
         if [[ -n $DO_CLOUD ]]; then
             XENIAL_TARBALL="${XENIAL_CLOUD}/xenial-server-cloudimg-${DEB_ARCH}-root.tar.xz"
             BIONIC_TARBALL="${BIONIC_CLOUD}/bionic-server-cloudimg-${DEB_ARCH}-root.tar.xz"
             FOCAL_TARBALL="${FOCAL_CLOUD}/focal-server-cloudimg-${DEB_ARCH}-root.tar.xz"
+            JAMMY_TARBALL="${JAMMY_CLOUD}/jammy-server-cloudimg-${DEB_ARCH}-root.tar.xz"
         else
-            FOCAL_BASE="ubuntu-20.04.6-minimal-arm64-2023-09-23"
+            BIONIC_BASE="${BIONIC_UBASE}"
+            BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
+            FOCAL_BASE="${FOCAL_UBASE}"
             FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+            JAMMY_BASE="${JAMMY_UBASE}"
+            JAMMY_TARBALL="${JAMMY_BASE}.tar.xz"
+            ALT_BASE_URL="${ALT_UBASE_URL}"
         fi
     fi
 fi
@@ -112,7 +124,7 @@ fi
 KERNEL_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 KALI_KERNEL_URL="https://gitlab.com/kalilinux/packages/linux.git"
 
-if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL ]]; then
+if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -n $DO_BIONIC || -n $DO_XENIAL || -n $DO_FOCAL || -n $DO_JAMMY ]]; then
     if [[ -n $DO_STRETCH ]]; then
         ROOTFS="debian-stretch"
         BASE_DIR="${STRETCH_BASE}"
@@ -134,6 +146,9 @@ if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -
     elif [[ -n $DO_FOCAL ]]; then
         ROOTFS="ubuntu-focal"
         BASE_DIR="${FOCAL_BASE}"
+    elif [[ -n $DO_JAMMY ]]; then
+        ROOTFS="ubuntu-jammy"
+        BASE_DIR="${JAMMY_BASE}"
     fi
     ROOTFS_BASE_URL="${ALT_BASE_URL}"
 fi
