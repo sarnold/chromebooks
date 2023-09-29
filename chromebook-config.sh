@@ -94,11 +94,11 @@ elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
             JAMMY_TARBALL="${JAMMY_CLOUD}/jammy-server-cloudimg-${DEB_ARCH}-root.tar.xz"
         else
             BIONIC_BASE="${BIONIC_UBASE}"
-            BIONIC_TARBALL="${BIONIC_BASE}.tar.xz"
+            BIONIC_TARBALL="${BIONIC_UBASE}.tar.xz"
             FOCAL_BASE="${FOCAL_UBASE}"
-            FOCAL_TARBALL="${FOCAL_BASE}.tar.xz"
+            FOCAL_TARBALL="${FOCAL_UBASE}.tar.xz"
             JAMMY_BASE="${JAMMY_UBASE}"
-            JAMMY_TARBALL="${JAMMY_BASE}.tar.xz"
+            JAMMY_TARBALL="${JAMMY_UBASE}.tar.xz"
             ALT_BASE_URL="${ALT_UBASE_URL}"
         fi
     fi
@@ -151,6 +151,9 @@ if [[ -n $DO_STRETCH || -n $DO_BUSTER || -n $DO_BULLSEYE || -n $DO_BOOKWORM || -
         BASE_DIR="${JAMMY_BASE}"
     fi
     ROOTFS_BASE_URL="${ALT_BASE_URL}"
+    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
+        ROOTFS_BASE_URL="${ALT_UBASE_URL}"
+    fi
 fi
 
 # Current Working Directory

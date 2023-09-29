@@ -258,7 +258,7 @@ else
 fi
 
 [ "$CB_SETUP_ARCH" = "arm" ] || [ "$CB_SETUP_ARCH" == "arm64" ] || [ "$CB_SETUP_ARCH" == "x86_64" ] || {
-    echo "Incorrect architecture device passed to the --architecture option."
+    echo "Incorrect architecture passed to the --architecture option: $CB_SETUP_ARCH"
     print_usage_exit
 }
 
@@ -302,24 +302,12 @@ elif [[ -n $DO_BOOKWORM ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BOOKWORM_TARBALL"
 elif [[ -n $DO_BIONIC ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$BIONIC_TARBALL"
-    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        ALT_ROOTFS_URL="$BIONIC_TARBALL"
-    fi
 elif [[ -n $DO_XENIAL ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$XENIAL_TARBALL"
-    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        ALT_ROOTFS_URL="$XENIAL_TARBALL"
-    fi
 elif [[ -n $DO_FOCAL ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$FOCAL_TARBALL"
-    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        ALT_ROOTFS_URL="$FOCAL_TARBALL"
-    fi
 elif [[ -n $DO_JAMMY ]]; then
     ALT_ROOTFS_URL="$ROOTFS_BASE_URL/$JAMMY_TARBALL"
-    if [ "$CB_SETUP_ARCH" == "arm64" ]; then
-        ALT_ROOTFS_URL="$JAMMY_TARBALL"
-    fi
 elif [[ -n $DO_GENTOO ]]; then
     ALT_ROOTFS_URL="${GENTOO_STAGE_URL}"
 elif [[ -n $DO_TOUCH ]]; then
