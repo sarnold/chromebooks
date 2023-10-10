@@ -591,7 +591,14 @@ cmd_setup_rootfs()
             CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
         fi
         sudo cp "${CLOUD_INIT_CFG}" "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/"
-        sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/${CLOUD_INIT_CFG}"
+        sudo chown root: "${ROOTFS_DIR}/etc/cloud/cloud.cfg.d/99-data.cfg"
+    fi
+
+    # apply basic netplan dhcp cfg on ubuntu
+    if [ -d "${ROOTFS_DIR}/etc/netplan/" ]; then
+        sudo cp -v "${NETPLAN_CFG}" "${ROOTFS_DIR}/etc/netplan/"
+        sudo chown root: "${ROOTFS_DIR}/etc/netplan/99-config.yaml"
+        sudo rm -f -v "${ROOTFS_DIR}/etc/ssh/ssh_host_*_key*"
     fi
 
     echo "Done."

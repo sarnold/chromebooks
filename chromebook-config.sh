@@ -69,6 +69,7 @@ FOCAL_UBASE="ubuntu-20.04.6-minimal-arm64-2023-09-28"
 JAMMY_UBASE="ubuntu-22.04.3-minimal-arm64-2023-09-28"
 
 XENIAL_CLOUD="https://cloud-images.ubuntu.com/xenial/current"
+
 BIONIC_CLOUD="https://cloud-images.ubuntu.com/bionic/current"
 FOCAL_CLOUD="https://cloud-images.ubuntu.com/focal/current"
 JAMMY_CLOUD="https://cloud-images.ubuntu.com/jammy/current"
@@ -78,6 +79,7 @@ BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
 BOOKWORM_TARBALL="${BOOKWORM_BASE}.tar.xz"
 
+NETPLAN_CFG="tools/cloud/99-config.yaml"
 CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
 [[ -n $HAVE_ETHERNET ]] && CLOUD_INIT_CFG="99-data-eth.cfg"
 
