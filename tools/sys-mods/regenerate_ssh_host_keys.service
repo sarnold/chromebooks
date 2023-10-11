@@ -1,0 +1,11 @@
+[Unit]
+Description=Regenerate SSH host keys
+Before=ssh.service
+ConditionFileIsExecutable=/usr/bin/ssh-keygen
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/regenerate_ssh_host_keys
+
+[Install]
+WantedBy=multi-user.target

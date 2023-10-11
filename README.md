@@ -31,8 +31,9 @@ The following Chromebooks have been tested with this tool.
 4. Confirm switching to developer mode by pressing enter, and the laptop
    will reboot and reset the system. This takes about 10-15 minutes.
 
-Note: After enabling developer mode, you will need to press Ctrl-D each
-      time you boot, or wait 30 seconds to continue booting ChromeOS.
+Note: After enabling developer mode, you will need to press Ctrl-U to boot
+      from external USB/SDcard --or-- Ctrl-D to boot the normal ChromeOS
+      each time you boot, or wait 30 seconds to continue booting ChromeOS.
 
 ## Enable booting from external storage
 1. After booting into developer mode, at the login screen hold Ctrl and Alt
