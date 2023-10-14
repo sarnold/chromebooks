@@ -584,7 +584,7 @@ cmd_setup_rootfs()
         if test "$DO_REGEN_KEYS" = 1; then
             sudo cp -v "${SSH_KEY_REGEN}" "${ROOTFS_DIR}/usr/lib/systemd/"
             sudo cp -v "${SSH_KEY_REGEN}.service" "${ROOTFS_DIR}/etc/systemd/system/"
-            sudo ln -st "${ROOTFS_DIR}"/etc/systemd/system/multi-user.target.wants
+            sudo ln -st "${ROOTFS_DIR}"/etc/systemd/system/multi-user.target.wants \
                 "${ROOTFS_DIR}"/etc/systemd/system/regenerate_ssh_host_keys.service
         fi
     fi
