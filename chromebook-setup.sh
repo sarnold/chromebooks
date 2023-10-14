@@ -580,6 +580,13 @@ cmd_setup_rootfs()
     if [[ -n $DO_GENTOO ]]; then
         echo "Allowing empty root password on Gentoo stage..."
         sudo sed -i -e "s|root:\*|root:|" "${ROOTFS_DIR}/etc/shadow"
+    else
+        if test "$DO_REGEN_KEYS" = 1; then
+            sudo cp -v "${SSH_KEY_REGEN}" "${ROOTFS_DIR}/usr/lib/systemd/"
+            sudo cp -v "${SSH_KEY_REGEN}.service" "${ROOTFS_DIR}/etc/systemd/system/"
+            sudo ln -st "${ROOTFS_DIR}"/etc/systemd/system/multi-user.target.wants
+                "${ROOTFS_DIR}"/etc/systemd/system/regenerate_ssh_host_keys.service
+        fi
     fi
 
     # adjust or disable cloud-init
@@ -598,7 +605,6 @@ cmd_setup_rootfs()
     if [ -d "${ROOTFS_DIR}/etc/netplan/" ]; then
         sudo cp -v "${NETPLAN_CFG}" "${ROOTFS_DIR}/etc/netplan/"
         sudo chown root: "${ROOTFS_DIR}/etc/netplan/99-config.yaml"
-        sudo rm -f -v "${ROOTFS_DIR}/etc/ssh/ssh_host_*_key*"
     fi
 
     echo "Done."

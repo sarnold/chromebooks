@@ -79,6 +79,7 @@ BUSTER_TARBALL="${BUSTER_BASE}.tar.xz"
 BULLSEYE_TARBALL="${BULLSEYE_BASE}.tar.xz"
 BOOKWORM_TARBALL="${BOOKWORM_BASE}.tar.xz"
 
+SSH_KEY_REGEN="tools/sys-mods/regenerate_ssh_host_keys"
 NETPLAN_CFG="tools/cloud/99-config.yaml"
 CLOUD_INIT_CFG="tools/cloud/99-data.cfg"
 [[ -n $HAVE_ETHERNET ]] && CLOUD_INIT_CFG="99-data-eth.cfg"
@@ -102,6 +103,7 @@ elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
             JAMMY_BASE="${JAMMY_UBASE}"
             JAMMY_TARBALL="${JAMMY_UBASE}.tar.xz"
             ALT_BASE_URL="${ALT_UBASE_URL}"
+            DO_REGEN_KEYS="1"
         fi
     fi
 fi
