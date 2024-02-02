@@ -909,6 +909,7 @@ ensure_command sgdisk gdisk
 ensure_command lz4 lz4
 ensure_command mkfs.ext4 e2fsprogs
 ensure_command mkimage u-boot-tools
+ensure_command parted parted
 ensure_command udisksctl udisks2
 ensure_command vbutil_kernel vboot-utils
 ensure_command wget wget
