@@ -543,7 +543,7 @@ cmd_mount_rootfs()
     echo "Mounting rootfs partition..."
 
     #udisksctl mount -b "$CB_SETUP_STORAGE2" > /dev/null 2>&1 || true
-    udisksctl mount -b "$CB_SETUP_STORAGE2"
+    sudo udisksctl mount -b "$CB_SETUP_STORAGE2"
     ROOTFS_DIR=$(findmnt -n -o TARGET --source $CB_SETUP_STORAGE2)
 
     # Verify that the disk is mounted, otherwise exit
@@ -642,20 +642,26 @@ cmd_get_kernel()
     local dir_name="$KRNL_SRC_DIR"
 
     # 1. Create initial git repository if not already present
-    # 2. Checkout the latest release tagged
+    # 2. Checkout the latest tagged release
     [ -d $dir_name ] || {
         git clone "$arg_url" $dir_name
-        cd "$dir_name"
-        local tag
-        if [[ -n $USE_LATEST_RC ]]; then
-            tag=$(git describe --abbrev=0)
-        else
-            rtag=$(git describe --abbrev=0 --exclude="*rc*")
-            tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
-        fi
-        git checkout ${tag} -b release-${tag}
-        cd - > /dev/null
     }
+    cd "$dir_name"
+    git checkout master
+    git pull --ff-only
+
+    local tag
+    if [[ -n $USE_LATEST_RC ]]; then
+        tag=$(git describe --abbrev=0)
+    else
+        rtag=$(git describe --abbrev=0 --exclude="*rc*")
+        tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
+    fi
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$current_branch" != "release-$tag" ]; then
+        git checkout ${tag} -b release-${tag}
+    fi
+    cd - > /dev/null
 
     echo "Done."
 }
@@ -850,8 +856,8 @@ cmd_eject_storage()
 
     echo "Ejecting storage device..."
 
-    udisksctl unmount -b "$CB_SETUP_STORAGE2"
-    udisksctl power-off -b "$CB_SETUP_STORAGE" > /dev/null 2>&1 || true
+    sudo udisksctl unmount -b "$CB_SETUP_STORAGE2"
+    #udisksctl power-off -b "$CB_SETUP_STORAGE" > /dev/null 2>&1 || true
 
     if [[ -n $DO_GENTOO ]]; then
         echo "You will need to set a root passwd!!"
@@ -909,6 +915,7 @@ ensure_command sgdisk gdisk
 ensure_command lz4 lz4
 ensure_command mkfs.ext4 e2fsprogs
 ensure_command mkimage u-boot-tools
+ensure_command parted parted
 ensure_command udisksctl udisks2
 ensure_command vbutil_kernel vboot-utils
 ensure_command wget wget
