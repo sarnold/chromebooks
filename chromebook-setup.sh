@@ -647,7 +647,10 @@ cmd_get_kernel()
         git clone "$arg_url" $dir_name
     }
     cd "$dir_name"
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    echo "current branch is $current_branch"
     git checkout master
+    git fetch --tags
     git pull --ff-only
 
     local tag
@@ -657,9 +660,11 @@ cmd_get_kernel()
         rtag=$(git describe --abbrev=0 --exclude="*rc*")
         tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
     fi
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    if [ "$current_branch" != "release-$tag" ]; then
+
+    if [[ $current_branch != "release-$tag" ]]; then
         git checkout ${tag} -b release-${tag}
+    else
+        git checkout $current_branch
     fi
     cd - > /dev/null
 
