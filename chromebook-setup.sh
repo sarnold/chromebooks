@@ -43,6 +43,13 @@ Usage:
 
 Overrides:
 
+  SKIP_GET_KERNEL:
+
+  Set SKIP_GET_KERNEL=true (or anything not zero-length) to keep your
+  current kernel branch and skip the kernel update/version check. Note
+  the normal behavior is to look for a newer tag and checkout a matching
+  branch if found.
+
   USE_LATEST_RC:
 
   Set USE_LATEST_RC=true (or anything not zero-length) to enable the
@@ -580,6 +587,7 @@ cmd_setup_rootfs()
     if [[ -n $DO_GENTOO ]]; then
         echo "Allowing empty root password on Gentoo stage..."
         sudo sed -i -e "s|root:\*|root:|" "${ROOTFS_DIR}/etc/shadow"
+        sudo sed -i "/^f0:/ s|f0:|#f0:|" "${ROOTFS_DIR}/etc/inittab"
     else
         if test "$DO_REGEN_KEYS" = 1; then
             sudo cp -v "${SSH_KEY_REGEN}" "${ROOTFS_DIR}/usr/lib/systemd/"
@@ -636,38 +644,41 @@ cmd_get_toolchain()
 
 cmd_get_kernel()
 {
-    echo "Creating initial git repository if not already present..."
-
-    local arg_url="${1-$KERNEL_URL}"
-    local dir_name="$KRNL_SRC_DIR"
-
-    # 1. Create initial git repository if not already present
-    # 2. Checkout the latest tagged release
-    [ -d $dir_name ] || {
-        git clone "$arg_url" $dir_name
-    }
-    cd "$dir_name"
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    echo "current branch is $current_branch"
-    git checkout master
-    git fetch --tags
-    git pull --ff-only
-
-    local tag
-    if [[ -n $USE_LATEST_RC ]]; then
-        tag=$(git describe --abbrev=0)
+    if [[ -n $SKIP_GET_KERNEL ]]; then
+        echo "Skipping kernel version check as requested..."
     else
-        rtag=$(git describe --abbrev=0 --exclude="*rc*")
-        tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
-    fi
+        echo "Creating initial git repository if not already present..."
 
-    if [[ $current_branch != "release-$tag" ]]; then
-        git checkout ${tag} -b release-${tag}
-    else
-        git checkout $current_branch
-    fi
-    cd - > /dev/null
+        local arg_url="${1-$KERNEL_URL}"
+        local dir_name="$KRNL_SRC_DIR"
 
+        # 1. Create initial git repository if not already present
+        # 2. Checkout the latest tagged release
+        [ -d $dir_name ] || {
+            git clone "$arg_url" $dir_name
+        }
+        cd "$dir_name"
+        current_branch=$(git rev-parse --abbrev-ref HEAD)
+        echo "current branch is $current_branch"
+        git checkout master
+        git fetch --tags
+        git pull --ff-only
+
+        local tag
+        if [[ -n $USE_LATEST_RC ]]; then
+            tag=$(git describe --abbrev=0)
+        else
+            rtag=$(git describe --abbrev=0 --exclude="*rc*")
+            tag=$(git tag --list "${rtag}.*" | sort -V | tail -n 1)
+        fi
+
+        if [[ $current_branch != "release-$tag" ]]; then
+            git checkout ${tag} -b release-${tag}
+        else
+            git checkout $current_branch
+        fi
+        cd - > /dev/null
+    fi
     echo "Done."
 }
 
