@@ -705,6 +705,8 @@ cmd_config_kernel()
                 echo "Cannot enable KVM host without LPAE"
             fi
             scripts/kconfig/merge_config.sh -m "${base_defconfig}" "${CPU_FRAGMENT}"  \
+                $CWD/fragments/common/misc.cfg \
+                $CWD/fragments/common/netfilter.cfg \
                 $CWD/fragments/multi-v7/touch.cfg \
                 $CWD/fragments/multi-v7/security.cfg \
                 $CWD/fragments/multi-v7/power.cfg \
@@ -715,10 +717,14 @@ cmd_config_kernel()
 
     elif [ "$CB_SETUP_ARCH" == "arm64" ]; then
         scripts/kconfig/merge_config.sh -m arch/arm64/configs/defconfig \
+            $CWD/fragments/common/misc.cfg \
+            $CWD/fragments/common/netfilter.cfg \
             $CWD/fragments/arm64/chromebooks.cfg \
             $CWD/fragments/chromeos/wifi.config
     else
         scripts/kconfig/merge_config.sh -m arch/x86/configs/x86_64_defconfig \
+            $CWD/fragments/common/misc.cfg \
+            $CWD/fragments/common/netfilter.cfg \
             $CWD/fragments/x86_64/chromebooks.cfg \
             $CWD/fragments/chromeos/wifi.config
     fi
