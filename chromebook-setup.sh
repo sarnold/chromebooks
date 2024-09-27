@@ -824,7 +824,7 @@ cmd_build_vboot()
             ;;
     esac
 
-    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 net.ifnames=0 noinitrd" > boot_params
+    echo "root=PARTUUID=%U/PARTNROFF=1 rootwait rw console=tty0 consoleblank=300 net.ifnames=0 noinitrd" > boot_params
     vbutil_kernel --pack $src_dir/kernel.vboot \
                        --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
                        --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \

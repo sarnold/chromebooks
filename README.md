@@ -79,6 +79,20 @@ Note: The above minimal debian/ubuntu roots are console only, but you are
 $ DO_GENTOO=1 USE_LIBC=musl ./chromebook-setup.sh do_everything --architecture=arm --storage=/dev/sdX
 ```
 
+## Note about build permissions
+There are no special permissions needed to run these build scripts in a modern
+desktop environment, however, the normal udisks permissions are NOT enabled by
+default for console-only logins. If you need to build remotely, then install the
+udisks polkit rule (as root) to allow console permissions. Something like this
+on your build host:
+
+```sh
+$ sudo cp tools/sys-mods/10-udisks2.rules /etc/polkit-1/rules.d/
+$ sudo chown root: /etc/polkit-1/rules.d/10-udisks2.rules
+```
+Edit the rule first to change the group from `wheel` to something else.
+
+
 ## Note about ethernet
 If your device has wired ethernet (including USB) *and* you're using one
 of the cloud image variants then you can enable the alternate cloud image
